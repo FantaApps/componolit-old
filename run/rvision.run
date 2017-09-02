@@ -71,8 +71,8 @@ append boot_modules {
 	rvision
 	freetype.lib.so
 	expat.lib.so
-        glapi.lib.so
-        mesa.lib.so
+	glapi.lib.so
+	mesa.lib.so
 	ld.lib.so
 	libc.lib.so
 	libc_pipe.lib.so
@@ -84,19 +84,19 @@ append boot_modules {
 	qt5_component.lib.so
 	qt5_core.lib.so
 	qt5_gui.lib.so
-        qt5_network.lib.so
-        qt5_qml.lib.so
-        qt5_quick.lib.so
+	qt5_network.lib.so
+	qt5_qml.lib.so
+	qt5_quick.lib.so
 	qt5_qtquick2plugin.lib.so
 	qt5_widgets.lib.so
-        qt5_windowplugin.lib.so
+	qt5_windowplugin.lib.so
 	qt5_xml.lib.so
 	zlib.lib.so
 	stdcxx.lib.so
-        libcrypto.lib.so
-        libssl.lib.so
-        egl.lib.so
-        egl_swrast.lib.so
+	libcrypto.lib.so
+	libssl.lib.so
+	egl.lib.so
+	egl_swrast.lib.so
 	qt5_fs_rvision.tar
 }
 
