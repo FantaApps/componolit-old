@@ -7,7 +7,7 @@ curl -O -J -L https://sourceforge.net/projects/genode/files/genode-toolchain/17.
 sudo tar -xf genode-toolchain-17.05-x86_64.tar.xz -C /
 
 # Checkout Genode and genode-world
-git clone --depth=50 --branch componolit-stable https://github.com/Componolit/genode.git ci/src
+git clone --depth=50 --branch ics-demo https://github.com/Componolit/genode.git ci/src
 git clone --depth=50 https://github.com/genodelabs/genode-world.git ci/src/repos/world
 ln -sf ../../.. ci/src/repos/componolit
 
