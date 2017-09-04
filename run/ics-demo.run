@@ -43,7 +43,7 @@ append config {
 append config [qt5_start_nodes feature]
 
 # copy images to bin directory
-foreach file { componolit_logo.png } {
+foreach file { componolit_logo.png rect_green.png rect_orange.png } {
     file copy -force [genode_dir]/repos/componolit/doc/images/$file bin/ }
 
 
@@ -55,9 +55,13 @@ append config {
 			<libc/>
 			<vfs>
 				<rom name="componolit_logo.png"/>
+				<rom name="rect_green.png"/>
+				<rom name="rect_orange.png"/>
 			</vfs>
 			<fill color="#ffffff" />
-			<image png="componolit_logo.png" anchor="top_left" alpha="255" xpos="20" ypos="20" />
+			<image png="componolit_logo.png" anchor="top_left" alpha="255" xpos="90" ypos="70" />
+			<image png="rect_green.png" anchor="top_right" alpha="255" xpos="0" ypos="0" />
+			<image png="rect_orange.png" anchor="bottom_left" alpha="255" xpos="0" ypos="0" />
 		</config>
 		<route>
 			<any-service> <child name="nitpicker" label="backdrop"/> <parent/> <any-child/>
@@ -126,6 +130,8 @@ append boot_modules {
 	nit_fb
 	backdrop
 	componolit_logo.png
+	rect_green.png
+	rect_orange.png
 }
 
 build_boot_image $boot_modules
