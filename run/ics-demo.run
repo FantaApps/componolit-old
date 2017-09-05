@@ -11,7 +11,11 @@ append build_components {
 	app/rvision
 	lib/qt5/qtdeclarative/src/imports/qtquick2
 	server/nit_fb
+	server/clipboard
 	app/backdrop
+	app/mupdf
+	lib/vfs/jitterentropy
+	app/arora
 }
 
 build $build_components
@@ -46,6 +50,8 @@ append config [qt5_start_nodes feature]
 foreach file { componolit_logo.png rect_green.png rect_orange.png } {
     file copy -force [genode_dir]/repos/componolit/doc/images/$file bin/ }
 
+# copy example PDF to bin directory
+file copy -force [genode_dir]/repos/componolit/doc/genode-foundations-17-05.pdf bin/test.pdf
 
 append config {
 
@@ -85,6 +91,53 @@ append config {
 			<any-service> <parent /> <any-child/> </any-service>
 		</route>
 	</start>
+
+    <start name="mupdf">
+        <resource name="RAM" quantum="500M"/>
+        <config>
+            <vfs>
+                <rom name="test.pdf" />
+                <dir name="dev"> <log/> </dir>
+            </vfs>
+            <libc stdout="/dev/log" stderr="/dev/log"/>
+        </config>
+    </start>
+
+	<start name="clipboard">
+		<resource name="RAM" quantum="4M"/>
+		<provides>
+			<service name="ROM"/>
+			<service name="Report"/>
+		</provides>
+		<config>
+			<policy label="arora -> clipboard" domain="default"  />
+		</config>
+		<route>
+			<service name="ROM" label="focus"> <child name="report_rom"/> </service>
+			<any-service> <parent/> </any-service>
+		</route>
+	</start>
+
+	<start name="arora" caps="2000">
+		<resource name="RAM" quantum="2G"/>
+		<config clipboard="yes">
+			<vfs>
+				<dir name="dev">
+					<log/>
+					<jitterentropy name="random"/>
+				</dir>
+				<tar name="qt5_fs_arora.tar"/>
+			</vfs>
+			<libc stdout="/dev/log" stderr="/dev/log"/>
+		</config>
+		<route>
+			<service name="Nitpicker"> <child name="wm"/> </service>
+			<service name="Report"> <child name="clipboard"/> </service>
+			<service name="ROM" label="clipboard"> <child name="clipboard"/> </service>
+			<service name="ROM" label="egl_drv.lib.so"> <parent label="egl_swrast.lib.so" /> </service>
+			<any-service> <parent/> <any-child/> </any-service>
+		</route>
+	</start>
 </config>
 }
 
@@ -97,41 +150,66 @@ install_config $config
 append boot_modules [qt5_boot_modules feature]
 
 append boot_modules {
-	rvision
-	freetype.lib.so
+	arora
+	backdrop
+	clipboard
+	componolit_logo.png
+	egl.lib.so
+	egl_swrast.lib.so
 	expat.lib.so
+	freetype.lib.so
 	glapi.lib.so
-	mesa.lib.so
+	icu.lib.so
+	jbig2dec.lib.so
+	jpeg.lib.so
 	ld.lib.so
 	libc.lib.so
 	libc_pipe.lib.so
+	libcrypto.lib.so
 	libm.lib.so
 	libpng.lib.so
-	jpeg.lib.so
+	libssl.lib.so
+	lwip.lib.so
+	mesa.lib.so
+	mupdf
+	mupdf.lib.so
+	nit_fb
+	openjpeg.lib.so
 	pcre16.lib.so
 	pthread.lib.so
+	qt5_angle.lib.so
 	qt5_component.lib.so
 	qt5_core.lib.so
+	qt5_fs_arora.tar
+	qt5_fs_rvision.tar
 	qt5_gui.lib.so
+	qt5_jscore.lib.so
 	qt5_network.lib.so
+	qt5_opengl.lib.so
+	qt5_printsupport.lib.so
 	qt5_qml.lib.so
-	qt5_quick.lib.so
+	qt5_qnitpickerviewwidget.lib.so
+	qt5_qpluginwidget.lib.so
 	qt5_qtquick2plugin.lib.so
+	qt5_quick.lib.so
+	qt5_scriptclassic.lib.so
+	qt5_sql.lib.so
+	qt5_ui_tools.lib.so
+	qt5_webcore.lib.so
+	qt5_webkit.lib.so
+	qt5_webkitwidgets.lib.so
 	qt5_widgets.lib.so
 	qt5_windowplugin.lib.so
+	qt5_wtf.lib.so
 	qt5_xml.lib.so
-	zlib.lib.so
-	stdcxx.lib.so
-	libcrypto.lib.so
-	libssl.lib.so
-	egl.lib.so
-	egl_swrast.lib.so
-	qt5_fs_rvision.tar
-	nit_fb
-	backdrop
-	componolit_logo.png
+	qt5_xml.lib.so
 	rect_green.png
 	rect_orange.png
+	rvision
+	stdcxx.lib.so
+	test.pdf
+	vfs_jitterentropy.lib.so
+	zlib.lib.so
 }
 
 build_boot_image $boot_modules
