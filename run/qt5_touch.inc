@@ -24,6 +24,7 @@ proc qt5_build_components { feature_arg } {
 		server/report_rom
 		app/floating_window_layouter
 		app/decorator
+		app/pointer
 		server/wm
 	}
 
@@ -142,6 +143,15 @@ proc qt5_start_nodes { feature_arg } {
 				</any-service>
 			</route>
 		</start>
+
+		<start name="pointer">
+		        <resource name="RAM" quantum="1M"/>
+		        <route>
+		                <service name="Nitpicker"> <child name="nitpicker"/> </service>
+		                <any-service> <parent/> <any-child/> </any-service>
+		        </route>
+		</start>
+
 	}
 
 	return $start_nodes
