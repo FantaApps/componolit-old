@@ -27,6 +27,7 @@ create_boot_directory
 #
 
 create_qt5_fs_tar_archive "rvision" "gui quick"
+create_qt5_fs_tar_archive "arora" "gui"
 
 #
 # Generate config
