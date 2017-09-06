@@ -97,7 +97,7 @@ proc qt5_start_nodes { feature_arg } {
 			</config>
 		</start>
 
-		<start name="wm" caps="150">
+		<start name="wm" caps="500">
 			<resource name="RAM" quantum="12M"/>
 			<provides>
 				<service name="Nitpicker"/>
@@ -120,8 +120,8 @@ proc qt5_start_nodes { feature_arg } {
 			<binary name="floating_window_layouter"/>
 			<resource name="RAM" quantum="4M"/>
 			<config>
-				<policy label_prefix="rvision" xpos="40"  ypos="500"/>
-				<policy label_prefix="arora"   xpos="415" ypos="38"/>
+				<policy label_prefix="rvision" xpos="40"  ypos="300"/>
+				<policy label_prefix="arora"   xpos="410" ypos="38"/>
 			</config>
 			<route>
 				<service name="ROM" label="window_list">       <child name="report_rom"/> </service>
