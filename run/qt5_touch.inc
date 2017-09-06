@@ -119,6 +119,10 @@ proc qt5_start_nodes { feature_arg } {
 		<start name="layouter">
 			<binary name="floating_window_layouter"/>
 			<resource name="RAM" quantum="4M"/>
+			<config>
+				<policy label_prefix="rvision" xpos="40"  ypos="500"/>
+				<policy label_prefix="arora"   xpos="415" ypos="38"/>
+			</config>
 			<route>
 				<service name="ROM" label="window_list">       <child name="report_rom"/> </service>
 				<service name="ROM" label="focus_request">     <child name="report_rom"/> </service>
