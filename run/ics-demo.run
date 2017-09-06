@@ -64,7 +64,7 @@ append config {
 				<rom name="rect_orange.png"/>
 			</vfs>
 			<fill color="#ffffff" />
-			<image png="componolit_logo.png" anchor="top_left" alpha="255" xpos="90" ypos="70" />
+			<image png="componolit_logo.png" anchor="top_left" alpha="255" xpos="45" ypos="70" />
 			<image png="rect_green.png" anchor="top_right" alpha="255" xpos="0" ypos="0" />
 			<image png="rect_orange.png" anchor="bottom_left" alpha="255" xpos="0" ypos="0" />
 		</config>
