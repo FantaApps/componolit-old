@@ -13,7 +13,6 @@ append build_components {
 	server/nit_fb
 	server/clipboard
 	app/backdrop
-	app/mupdf
 	lib/vfs/jitterentropy
 	app/arora
 }
@@ -92,17 +91,6 @@ append config {
 		</route>
 	</start>
 
-    <start name="mupdf">
-        <resource name="RAM" quantum="500M"/>
-        <config>
-            <vfs>
-                <rom name="test.pdf" />
-                <dir name="dev"> <log/> </dir>
-            </vfs>
-            <libc stdout="/dev/log" stderr="/dev/log"/>
-        </config>
-    </start>
-
 	<start name="clipboard">
 		<resource name="RAM" quantum="4M"/>
 		<provides>
@@ -171,8 +159,6 @@ append boot_modules {
 	libssl.lib.so
 	lwip.lib.so
 	mesa.lib.so
-	mupdf
-	mupdf.lib.so
 	nit_fb
 	openjpeg.lib.so
 	pcre16.lib.so
