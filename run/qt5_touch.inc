@@ -148,6 +148,7 @@ proc qt5_start_nodes { feature_arg } {
 			</route>
 		</start>
 
+<!--
 		<start name="pointer">
 		        <resource name="RAM" quantum="1M"/>
 		        <route>
@@ -155,6 +156,7 @@ proc qt5_start_nodes { feature_arg } {
 		                <any-service> <parent/> <any-child/> </any-service>
 		        </route>
 		</start>
+-->
 
 	}
 
