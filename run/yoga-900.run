@@ -8,6 +8,7 @@ set build_components {
 	app/backdrop
 	app/vbox_pointer
 	core init
+	drivers/audio
 	drivers/framebuffer
 	drivers/input
 	drivers/rtc
@@ -22,6 +23,8 @@ set build_components {
 	server/terminal
 	server/terminal_log
 	virtualbox5
+
+	test/audio_out
 }
 
 source ${genode_dir}/repos/base/run/platform_drv.inc
@@ -299,6 +302,27 @@ append config {
 		</route>
 	</start>
 
+	<start name="audio_drv">
+		<resource name="RAM" quantum="8M"/>
+		<provides> <service name="Audio_out"/> </provides>
+		<config />
+		<route>
+			<service name="LOG"> <child name="terminal_log"/> </service>
+			<any-service> <parent /> <any-child /> </any-service>
+		</route>
+	</start>
+
+	<start name="test-audio_out">
+		<resource name="RAM" quantum="4M"/>
+		<config>
+			<filename>sample.raw</filename>
+		</config>
+		<route>
+			<service name="LOG"> <child name="terminal_log"/> </service>
+			<any-service><parent/><any-child/></any-service>
+		</route>
+	</start>
+
 </config>}
 
 install_config $config
@@ -309,6 +333,7 @@ install_config $config
 
 # generic modules
 set boot_modules {
+	audio_drv
 	backdrop
 	core
     fb_boot_drv
@@ -343,6 +368,7 @@ set boot_modules {
 	zlib.lib.so
 
 	background.png
+	sample.raw
 }
 
 
