@@ -10,14 +10,14 @@ static void test()
     __thread int _x = 42;
     int x = _x;
     void* x_ptr = (void*)&_x;
-    Genode::log("threads tls: ", x, " @ ", x_ptr);
+    Genode::log("concurrency tls: ", x, " @ ", x_ptr);
 }
 
 struct Main{
     
     Main(Genode::Env &)
     {
-        Genode::log("threads tls: ", __func__);
+        Genode::log("concurrency tls: ", __func__);
         std::thread t(test);
         for(;;);
     }

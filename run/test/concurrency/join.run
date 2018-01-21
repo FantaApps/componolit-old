@@ -2,7 +2,7 @@
 
 build {
     core init
-    test/threads/mutex
+    test/concurrency/join
     drivers/timer
 }
 
@@ -10,7 +10,7 @@ create_boot_directory
 
 install_config {
 <config prio_levels="2" verbose="yes">
-
+    
     <parent-provides>
         <service name="ROM"/>
         <service name="IRQ"/>
@@ -25,7 +25,7 @@ install_config {
         <any-service> <parent/> <any-child/> </any-service>
     </default-route>
     <default caps="100"/>
-
+    
     <start name="timer">
         <resource name="RAM" quantum="1M"/>
         <provides>
@@ -33,7 +33,7 @@ install_config {
         </provides>
     </start>
 
-    <start name="test-threads-mutex" priority="-1">
+    <start name="test-concurrency-join" priority="-1">
         <resource name="RAM" quantum="4M"/>
     </start>
 
@@ -43,9 +43,9 @@ install_config {
 build_boot_image {
     core ld.lib.so init cxxthreads.lib.so
     libc.lib.so libm.lib.so stdcxx.lib.so
-    timer test-threads-mutex
+    timer test-concurrency-join
 }
 
 append qemu_args " -nographic  "
 
-run_genode_until "Mutex OK" 10
+run_genode_until "concurrency join: finished 1" 10

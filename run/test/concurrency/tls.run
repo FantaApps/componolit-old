@@ -1,8 +1,8 @@
-# RTC test
+# thread local storage test
 
 build {
     core init
-    test/threads/exception
+    test/concurrency/tls
 }
 
 create_boot_directory
@@ -25,7 +25,7 @@ install_config {
     </default-route>
     <default caps="100"/>
     
-    <start name="test-threads-exception" priority="-1">
+    <start name="test-concurrency-tls" priority="-1">
         <resource name="RAM" quantum="4M"/>
     </start>
 
@@ -34,10 +34,10 @@ install_config {
 
 build_boot_image {
     core ld.lib.so init
-    libc.lib.so libm.lib.so
-    test-threads-exception
+    libc.lib.so libm.lib.so pthread.lib.so stdcxx.lib.so
+    test-concurrency-tls
 }
 
 append qemu_args " -nographic  "
 
-run_genode_until "threads join: finished 1" 10
+run_genode_until "concurrency tls: .* @ .*" 10

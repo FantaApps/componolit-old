@@ -7,7 +7,7 @@
 
 static void test(int *x, Timer::Connection *_t)
 {
-    Genode::log("threads join: ", __func__);
+    Genode::log("concurrency join: ", __func__);
     _t->msleep(5000);
     *x = 1;
 }
@@ -19,11 +19,11 @@ struct Main {
     Main(Genode::Env &env) : _timer(env)
     {
         cxxthread_env.initialize (env, 100 * 4096);
-        Genode::log("threads join: ", __func__);
+        Genode::log("concurrency join: ", __func__);
         int x = 0;
         std::thread t(test, &x, &_timer);
         t.join();
-        Genode::log("threads join: ", "finished ", x);
+        Genode::log("concurrency join: ", "finished ", x);
     }
 };
 
