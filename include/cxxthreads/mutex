@@ -2,9 +2,11 @@
 
 // Genode includes
 #include <base/lock.h>
+#include <base/lock_guard.h>
 
 namespace std {
     class mutex;
+    template <class Mutex> class lock_guard;
 }
 
 class std::mutex : Genode::Lock {
@@ -20,4 +22,15 @@ class std::mutex : Genode::Lock {
         {
             Genode::Lock::unlock();
         };
+};
+
+template <class Mutex>
+class std::lock_guard : Genode::Lock_guard<Mutex> {
+
+    public:
+
+        lock_guard (Mutex m)
+        :
+            Genode::Lock_guard<Mutex>(m)
+        { };
 };
