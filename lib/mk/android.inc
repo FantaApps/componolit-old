@@ -44,6 +44,9 @@ SRC_CC  += $(filter-out $(ANDROID_EXCLUDE_CC),$(filter %.cpp %.cc,$($(ANDROID_NA
 SRC_S   += $(filter-out $(ANDROID_EXCLUDE_S),$(filter %.S %.s,$($(ANDROID_NAME)_SRCS)))
 CC_OPT  += -Werror -D__GENODE__ $(filter-out $(ANDROID_EXCLUDE_OPT),$($(ANDROID_NAME)_CFLAGS))
 
+# Android code does not compile with effc++ flag enabled
+CC_CXX_OPT += -Wno-error=effc++
+
 # Set C++ standard to C++14
 CC_CXX_OPT_STD = -std=gnu++14
 
