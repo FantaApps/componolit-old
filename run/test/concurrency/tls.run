@@ -34,10 +34,12 @@ install_config {
 
 build_boot_image {
     core ld.lib.so init
+    cxxthreads.lib.so
     libc.lib.so libm.lib.so pthread.lib.so stdcxx.lib.so
     test-concurrency-tls
 }
 
 append qemu_args " -nographic  "
 
-run_genode_until "concurrency tls: .* @ .*" 10
+# This test is expected to fail with an exception - we do not implement thread-local storage
+run_genode_until "Error: Uncaught exception of type 'std::thread_env_uninitialized'" 10

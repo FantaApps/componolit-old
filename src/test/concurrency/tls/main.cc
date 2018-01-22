@@ -7,7 +7,7 @@
 static void test()
 {
     Genode::log("threads tls: ", __func__);
-    __thread int _x = 42;
+    static __thread int _x = 42;
     int x = _x;
     void* x_ptr = (void*)&_x;
     Genode::log("concurrency tls: ", x, " @ ", x_ptr);

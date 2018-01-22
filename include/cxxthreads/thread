@@ -10,9 +10,11 @@ namespace std {
     class thread;
     class thread_env;
     class thread_env_uninitialized;
+    class tls_not_implemented;
 }
 
 class std::thread_env_uninitialized : Genode::Exception { };
+class std::tls_not_implemented : Genode::Exception { };
 
 class std::thread_env {
 
