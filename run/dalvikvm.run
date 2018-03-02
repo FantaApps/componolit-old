@@ -112,7 +112,7 @@ set boot_modules {
 	icu.lib.so libbacktrace.lib.so
 	libbase.lib.so libcutils.lib.so
 	lwip.lib.so posix.lib.so
-	libfakeatomic.lib.so liblz4.lib.so
+	liblz4.lib.so
 	libnativebridge.lib.so
 	libnativeloader.lib.so
 	libutils.lib.so

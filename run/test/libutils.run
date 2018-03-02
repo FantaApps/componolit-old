@@ -94,7 +94,7 @@ set boot_modules {
 	posix.lib.so pthread.lib.so stdcxx.lib.so
 	lwip.lib.so
 	liblog.lib.so libbase.lib.so libutils.lib.so libcutils.lib.so
-	libfakeatomic.lib.so libbacktrace.lib.so
+	libbacktrace.lib.so
 	zlib.lib.so
 	rtc_drv
 	libutils_tests_singleton1.so

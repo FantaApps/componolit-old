@@ -87,7 +87,7 @@ set boot_modules {
 	lwip.lib.so
 	liblog.lib.so libbase.lib.so libziparchive.lib.so
 	libcutils.lib.so libutils.lib.so zlib.lib.so
-	libfakeatomic.lib.so libbacktrace.lib.so
+	libbacktrace.lib.so
 	rtc_drv
 	libziparchive_test
 	testdata.tar
