@@ -5,18 +5,20 @@
 namespace art {
 
 void Thread::SetUpAlternateSignalStack() {
-	Genode::log("SetUpAlternateSignalStack(): Not implemented");
+	Genode::log(__func__, ": Not implemented");
 }
 void Thread::TearDownAlternateSignalStack() {
-	Genode::log("TearDownAlternateSignalStack(): Not implemented ");
+	Genode::log(__func__, ": Not implemented");
 }
 
 void Thread::SetNativePriority(int) {
+	Genode::log(__func__, ": Not implemented");
 	// Do nothing.
 }
 
 int Thread::GetNativePriority() {                                                                                                              
-  return kNormThreadPriority;
+	Genode::log(__func__, ": Not implemented");
+	return kNormThreadPriority;
 }
 
 }
