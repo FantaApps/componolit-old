@@ -6,6 +6,9 @@ ANDROID_SECTIONS = \
 	/art_cc_library[@name=libart]/arch/$(ANDROID_ARCH) \
 	/gensrcs[@name=art_operator_srcs]
 
+# We want to override Thread::InitCpu() and Thread::CleanupCpu()
+ANDROID_EXCLUDE_CC = arch/x86_64/thread_x86_64.cc
+
 include $(call select_from_repositories,lib/mk/libart-defaults.inc)
 include $(call select_from_repositories,lib/mk/android-lib.inc)
 
