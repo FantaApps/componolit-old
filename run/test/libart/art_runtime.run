@@ -106,6 +106,7 @@ set boot_modules {
 	libnativehelper.lib.so libnativeloader.lib.so
 	libutils.lib.so zlib.lib.so libziparchive.lib.so
 	sigchainlib.lib.so
+	libsilence.lib.so
 	framework.tar
 	art_runtime_test
 }
