@@ -43,10 +43,12 @@ install_config {
 		<provides> <service name="Timer"/> </provides>
 	</start>
 
+<!--
 	<start name="rtc_drv">
 		<resource name="RAM" quantum="1M"/>
 		<provides> <service name="Rtc"/> </provides>
 	</start>
+-->
 
 	<start name="ram_fs">
 		<resource name="RAM" quantum="128M"/>
@@ -57,7 +59,7 @@ install_config {
 	</start>
 
 	<start name="art_runtime_test">
-		<resource name="RAM" quantum="800MB"/>
+		<resource name="RAM" quantum="1500MB"/>
 		<config>
 			<vfs>
 				<dir name="tmp"> <fs/> </dir>
@@ -114,5 +116,5 @@ set boot_modules {
 append_platform_drv_boot_modules
 build_boot_image $boot_modules
 
-append qemu_args " -m 1024 -nographic "
-run_genode_until {.*child "art_runtime_test" exited with exit value 0} 100
+append qemu_args " -m 2048 -nographic "
+run_genode_until {.*child "art_runtime_test" exited with exit value 0} 1000
