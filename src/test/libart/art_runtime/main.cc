@@ -4,9 +4,10 @@
 /* libc includes */
 #include <stdlib.h> /* 'exit'   */
 
+#include <base/logging.h>
 #include <gtest/gtest.h>
 
-extern int          genode_argc;
+extern int    genode_argc;
 extern const char **genode_argv;
 
 /* provided by the application */
@@ -25,6 +26,8 @@ void Libc::Component::construct(Libc::Env &env)
 		genode_argc = 2;
 		genode_argv = argv;
 		setprogname (genode_argv[0]);
+
+		android::base::InitLogging((char **)genode_argv, android::base::StderrLogger, android::base::DefaultAborter);
 		exit(main(genode_argc, genode_argv));
 	});
 }
