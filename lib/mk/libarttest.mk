@@ -18,4 +18,4 @@ $(warning SUPPRESSING WARNINGS - REMOVE FOR PRODUCTION!)
 CC_OPT += -w
 
 SRC_CC += main.cc
-LIBS   += gtest libart sigchainlib libbacktrace valgrind dlmalloc pthread
+LIBS   += gtest libart libsigchain libbacktrace valgrind dlmalloc pthread

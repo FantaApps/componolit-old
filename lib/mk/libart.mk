@@ -36,4 +36,4 @@ SRC_C += monitor_linux.cc
 $(warning SUPPRESSING WARNINGS - REMOVE FOR PRODUCTION!)
 CC_OPT += -w
 
-LIBS += sigchainlib
+LIBS += libsigchain

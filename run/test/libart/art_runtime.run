@@ -107,7 +107,7 @@ set boot_modules {
 	libart.lib.so liblz4.lib.so libnativebridge.lib.so
 	libnativehelper.lib.so libnativeloader.lib.so
 	libutils.lib.so zlib.lib.so libziparchive.lib.so
-	sigchainlib.lib.so
+	libsigchain.lib.so
 	libsilence.lib.so
 	framework.tar
 	art_runtime_test
