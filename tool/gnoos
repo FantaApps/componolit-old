@@ -1046,8 +1046,11 @@ if __name__ == "__main__":
         except MissingVariable as e:
             print ('\033[31;1mERROR: %s/%s: Missing variable "%s"\033[0m' % (ARGS.basedir, soong_file, str(e)))
             sys.exit(1)
-
-    SOONG_PARSER.resolve_defaults()
+    try:
+        SOONG_PARSER.resolve_defaults()
+    except NotFound as e:
+        print ('\033[31;1mEmpty result: "%s" in [%s]\033[0m' % (str(e), ','.join(ARGS.input)))
+        sys.exit(1)
 
     try:
         QUERY_TEXT = "|".join(ARGS.queries)
