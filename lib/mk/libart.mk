@@ -7,7 +7,10 @@ ANDROID_SECTIONS = \
 	/gensrcs[@name=art_operator_srcs]
 
 # We want to override Thread::InitCpu() and Thread::CleanupCpu()
-ANDROID_EXCLUDE_CC = arch/x86_64/thread_x86_64.cc
+ANDROID_EXCLUDE_CC += arch/x86_64/thread_x86_64.cc
+
+# We want to overrid art::Exec()
+ANDROID_EXCLUDE_CC += exec_utils.cc
 
 include $(call select_from_repositories,lib/mk/libart-defaults.inc)
 include $(call select_from_repositories,lib/mk/android-lib.inc)
@@ -26,7 +29,7 @@ vpath % $(GENDIR) $(call select_from_repositories,src/lib/libart)
 SRC_C += $(OUTPUT)
 
 # Genode implementations
-SRC_C += signal.c runtime_genode.cc thread_genode.cc
+SRC_C += signal.c runtime_genode.cc thread_genode.cc exec_genode.cc
 
 # Linux monitoring implementation is a dummy, so reuse it
 SRC_C += monitor_linux.cc
