@@ -7,6 +7,7 @@ set build_components {
 	drivers/timer
 	drivers/rtc
 	server/ram_fs
+	app/dummy-dexlayout
 	test/libart-dexlayout
 }
 
@@ -109,6 +110,9 @@ set boot_modules {
 	libutils.lib.so zlib.lib.so libziparchive.lib.so
 	libsigchain.lib.so
 	libsilence.lib.so
+	libz.lib.so
+	libart-dexlayout.lib.so
+	dexlayout.lib.so
 	framework.tar
 	libart-dexlayout_test
 }
