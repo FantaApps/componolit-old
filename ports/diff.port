@@ -1,0 +1,8 @@
+LICENSE   := GPLv3
+VERSION   := git
+DOWNLOADS := diff.archive
+
+URL(diff) := https://ftp.gnu.org/gnu/diffutils/diffutils-3.6.tar.xz
+SHA(diff) := 1287a553868b808ebfff3790a5cdc6fdf7cb2886
+DIR(diff) := diff
+PATCHES   := src/lib/test/diff/diff.patch
