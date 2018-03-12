@@ -1,5 +1,6 @@
 // libc includes
 #include <dlfcn.h>
+#include <getopt.h>
 
 // std includes
 #include <string>
@@ -41,6 +42,9 @@ bool art::Exec(std::vector<std::string>& arg_vector, std::string* error_msg)
         argv.push_back(argument);
     }
     argv.push_back(nullptr);
+
+    // Reset getopt
+    optind = 1;
 
     return (main(argv.size() - 1, &argv[0]) == 0);
 };
