@@ -67,6 +67,7 @@ install_config {
 				<dir name="dev">
 					<log/>
 					<rtc/>
+					<null/>
 				</dir>
 				<dir name="android">
 					<dir name="framework">
