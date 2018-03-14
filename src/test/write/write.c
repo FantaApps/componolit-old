@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
@@ -7,6 +8,8 @@ int
 main (int argc, char **argv)
 {
     int fd, rv;
+
+    for (int i = 0; i < argc; i++) { printf("%d: %s\n", i, argv[i]); }
 
     if (argc != 3)
     {
