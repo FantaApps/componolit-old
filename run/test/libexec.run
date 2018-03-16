@@ -1,0 +1,109 @@
+#
+# Build
+#
+
+set build_components {
+	core init
+	drivers/timer
+	server/ram_fs
+    server/rom_filter
+    test/write
+    test/libexec
+}
+
+source ${genode_dir}/repos/base/run/platform_drv.inc
+append_platform_drv_build_components
+build $build_components
+create_boot_directory
+
+#
+# Generate config
+#
+
+install_config {
+<config verbose="no">
+	<parent-provides>
+		<service name="ROM"/>
+		<service name="CAP"/>
+		<service name="RM"/>
+		<service name="PD"/>
+		<service name="CPU"/>
+		<service name="LOG"/>
+		<service name="SIGNAL"/>
+		<service name="IO_PORT"/>
+		<service name="IRQ"/>
+		<service name="IO_MEM"/>
+	</parent-provides>
+	<default-route>
+		<any-service> <parent/> <any-child/> </any-service>
+	</default-route>
+	<default caps="100"/>
+
+	<start name="timer">
+		<resource name="RAM" quantum="1M"/>
+		<provides> <service name="Timer"/> </provides>
+	</start>
+
+	<start name="ram_fs">
+		<resource name="RAM" quantum="128M"/>
+		<provides> <service name="File_system"/> </provides>
+		<config>
+			<default-policy root="/" writeable="true" />
+		</config>
+	</start>
+
+    <start name="apphost_config">
+        <resource name="RAM" quantum="1M"/>
+        <binary name="report_rom"/>
+        <provides>
+            <service name="Report"/>
+            <service name="ROM"/>
+        </provides>
+        <config verbose="no">
+            <policy label="apphost -> config" report="test-libexec -> init_config"/>
+            <policy label="test-libexec -> init_state" report="apphost -> state"/>
+        </config>
+    </start>
+
+	<start name="apphost" caps="1000">
+		<resource name="RAM" quantum="128M"/>
+        <binary name="init"/>
+        <route>
+            <service name="ROM" label="config"> <child name="apphost_config"/> </service>
+            <service name="Report"> <child name="apphost_config"/> </service>
+		    <any-service> <parent/> <any-child/> </any-service>
+        </route>
+	</start>
+
+	<start name="test-libexec">
+		<resource name="RAM" quantum="4M"/>
+		<config>
+			<default-policy root="/" writeable="true" />
+		</config>
+        <route>
+            <service name="ROM" label="init_state"> <child name="apphost_config"/> </service>
+		    <any-service> <parent/> <any-child/> </any-service>
+        </route>
+	</start>
+</config>}
+
+#
+# Boot image
+#
+
+# generic modules
+set boot_modules {
+	core init ld.lib.so
+    libc.lib.so
+    libargv.lib.so
+    libexec.lib.so
+	timer ram_fs rom_filter
+    write
+    test-libexec
+}
+
+append_platform_drv_boot_modules
+build_boot_image $boot_modules
+
+append qemu_args " -m 512 -nographic "
+run_genode_until {.* Done.} 100
