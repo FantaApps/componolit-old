@@ -6,3 +6,5 @@ ANDROID_MK += $(call select_from_repositories,lib/mk/android-lib.inc)
 ANDROID_MK += $(call select_from_repositories,lib/mk/android.inc)
 
 include $(call select_from_repositories,lib/mk/android.inc)
+
+LIBS += libargv

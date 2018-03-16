@@ -1,3 +1,4 @@
+TARGET = unzip
 UNZIP_DIR = $(call select_from_ports,unzip)/unzip
 
 SRC_C = \
@@ -24,5 +25,4 @@ vpath %.c $(UNZIP_DIR) $(UNZIP_DIR)/unix
 
 CC_OPT += -DNO_LCHMOD -DNO_LCHOWN
 
-LIBS += libc
-SHARED_LIB = yes
+LIBS += libc libargv

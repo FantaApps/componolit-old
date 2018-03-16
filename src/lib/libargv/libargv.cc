@@ -8,6 +8,8 @@
 extern "C"
 int main (int argc, char **argv);
 
+Genode::Env *genode_env;
+
 template <size_t CAPACITY, size_t MAXARGS>
 class Arguments
 {
@@ -45,6 +47,7 @@ void Libc::Component::construct(Libc::Env &env)
 {
     using namespace Genode;
 
+    genode_env = &env;
     Arguments<4096,64> _arguments;
 
     Genode::Attached_rom_dataspace config { env, "config" };

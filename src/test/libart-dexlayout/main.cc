@@ -9,13 +9,14 @@
 
 extern int    genode_argc;
 extern const char **genode_argv;
+Genode::Env *genode_env;
 
 /* provided by the application */
 extern "C" int main(int argc, char const **argv);
 
 void Libc::Component::construct(Libc::Env &env)
 {
-	Libc::with_libc([&] {
+		Libc::with_libc([&] {
 
 		char const *argv[] = {
 			"/bin/test_art_runtime",
@@ -27,6 +28,7 @@ void Libc::Component::construct(Libc::Env &env)
 		genode_argv = argv;
 		setprogname (genode_argv[0]);
 
+        genode_env = &env;
 		android::base::InitLogging((char **)genode_argv, android::base::StderrLogger, android::base::DefaultAborter);
 		exit(main(genode_argc, genode_argv));
 	});
