@@ -7,7 +7,7 @@ set build_components {
 	drivers/timer
 	drivers/rtc
 	server/ram_fs
-	test/write-dummy
+	test/write
 	test/genode_exec
 }
 
@@ -57,6 +57,29 @@ install_config {
 		</config>
 	</start>
 
+    <start name="apphost_config">
+        <resource name="RAM" quantum="1M"/>
+        <binary name="report_rom"/>
+        <provides>
+            <service name="Report"/>
+            <service name="ROM"/>
+        </provides>
+        <config verbose="no">
+            <policy label="apphost -> config" report="test-genode_exec -> init_config"/>
+            <policy label="test-genode_exec -> init_state" report="apphost -> state"/>
+        </config>
+    </start>
+
+	<start name="apphost" caps="1000">
+		<resource name="RAM" quantum="128M"/>
+        <binary name="init"/>
+        <route>
+            <service name="ROM" label="config"> <child name="apphost_config"/> </service>
+            <service name="Report"> <child name="apphost_config"/> </service>
+		    <any-service> <parent/> <any-child/> </any-service>
+        </route>
+	</start>
+
 	<start name="test-genode_exec">
 		<resource name="RAM" quantum="32M"/>
 		<config>
@@ -66,6 +89,10 @@ install_config {
 			</vfs>
 			<libc stdout="/dev/log" stderr="/dev/log" rtc="/dev/rtc" />
 		</config>
+        <route>
+            <service name="ROM" label="init_state"> <child name="apphost_config"/> </service>
+		    <any-service> <parent/> <any-child/> </any-service>
+        </route>
 	</start>
 </config>}
 
@@ -80,7 +107,9 @@ set boot_modules {
     cxxthreads.lib.so
 	libc.lib.so libm.lib.so posix.lib.so pthread.lib.so stdcxx.lib.so
 	libbase.lib.so liblog.lib.so
-	write.lib.so
+	libargv.lib.so
+	libexec.lib.so
+	write
 	rtc_drv
 	test-genode_exec
 }

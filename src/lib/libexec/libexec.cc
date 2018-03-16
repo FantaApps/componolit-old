@@ -54,7 +54,7 @@ int Componolit::Libexec::Exec (const char *binary, const char *arguments[])
             {
                 xml.node("argv", [&] ()
                 {
-                    xml.attribute("progname", app);
+                    xml.attribute("progname", binary);
                     for (int i = 0; arguments[i]; i++)
                     {
                         xml.node("arg", [&] () { xml.attribute("value", arguments[i]); });
