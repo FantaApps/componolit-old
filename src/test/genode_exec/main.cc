@@ -3,8 +3,12 @@
 #include <exec_utils.h>
 #include <fstream>
 
+Genode::Env *genode_env;
+
 void Libc::Component::construct(Libc::Env &env)
 {
+	genode_env = &env;
+
 	Libc::with_libc([&] {
 
         std::vector<std::string> arguments;
