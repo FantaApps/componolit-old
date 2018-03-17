@@ -25,6 +25,9 @@ ANDROID_INCLUDES = runtime runtime/arch
 ANDROID_EXCLUDE_OPT += \
 	-Wshadow
 
+# In case we use this without including android.inc
+CC_OPT += -D__GENODE__
+
 # Taken from build/art.go
 CC_OPT += -DIMT_SIZE=43
 CC_OPT += -DART_DEFAULT_GC_TYPE_IS_SS
