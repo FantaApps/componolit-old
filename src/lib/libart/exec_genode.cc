@@ -32,5 +32,5 @@ bool art::Exec(std::vector<std::string>& arg_vector, std::string* error_msg)
     argv.push_back(nullptr);
 
     Componolit::Libexec _le(*genode_env);
-    return _le.Exec((const char *)binary.c_str(), (const char **)&argv[0]);
+    return (_le.Exec((const char *)binary.c_str(), (const char **)&argv[0]) == 0);
 };
