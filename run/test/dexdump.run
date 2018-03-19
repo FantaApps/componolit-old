@@ -1,0 +1,123 @@
+#
+# Build
+#
+
+set build_components {
+	core init
+	drivers/timer
+	drivers/rtc
+	server/ram_fs
+	app/dexdump2
+	test/dexdump
+}
+
+source ${genode_dir}/repos/base/run/platform_drv.inc
+append_platform_drv_build_components
+build $build_components
+create_boot_directory
+
+#
+# Generate config
+#
+
+install_config {
+<config verbose="yes">
+	<parent-provides>
+		<service name="ROM"/>
+		<service name="CAP"/>
+		<service name="RM"/>
+		<service name="PD"/>
+		<service name="CPU"/>
+		<service name="LOG"/>
+		<service name="SIGNAL"/>
+		<service name="IO_PORT"/>
+		<service name="IRQ"/>
+		<service name="IO_MEM"/>
+	</parent-provides>
+	<default-route>
+		<any-service> <parent/> <any-child/> </any-service>
+	</default-route>
+	<default caps="100"/>
+
+	<start name="timer">
+		<resource name="RAM" quantum="1M"/>
+		<provides> <service name="Timer"/> </provides>
+	</start>
+
+	<start name="rtc_drv">
+		<resource name="RAM" quantum="1M"/>
+		<provides> <service name="Rtc"/> </provides>
+	</start>
+
+	<start name="ram_fs">
+		<resource name="RAM" quantum="128M"/>
+		<provides> <service name="File_system"/> </provides>
+		<config>
+			<default-policy root="/" writeable="true" />
+		</config>
+	</start>
+
+    <start name="apphost_config">
+        <resource name="RAM" quantum="10M"/>
+        <binary name="report_rom"/>
+        <provides>
+            <service name="Report"/>
+            <service name="ROM"/>
+        </provides>
+        <config verbose="yes">
+            <policy label="apphost -> config" report="test-dexdump -> init_config"/>
+            <policy label="test-dexdump -> init_state" report="apphost -> state"/>
+        </config>
+    </start>
+
+	<start name="apphost" caps="1000">
+		<resource name="RAM" quantum="300M"/>
+        <binary name="init"/>
+        <route>
+            <service name="ROM" label="config"> <child name="apphost_config"/> </service>
+            <service name="Report"> <child name="apphost_config"/> </service>
+		    <any-service> <parent/> <any-child/> </any-service>
+        </route>
+	</start>
+
+	<start name="test-dexdump" caps="200" >
+		<resource name="RAM" quantum="10M"/>
+		<config>
+			<libexec ram="100M" caps="300"/>	
+			<vfs>
+				<dir name="tmp"> <fs/> </dir>
+				<dir name="dev"> <log/> <rtc/> </dir>
+			</vfs>
+			<libc stdout="/dev/log" stderr="/dev/log" rtc="/dev/rtc" />
+		</config>
+	</start>
+</config>}
+
+#
+# Boot image
+#
+
+# generic modules
+set boot_modules {
+	core init ld.lib.so
+	timer ram_fs
+	cxxthreads.lib.so
+	libc.lib.so libm.lib.so posix.lib.so pthread.lib.so stdcxx.lib.so
+	liblog.lib.so libbase.lib.so
+	libargv.lib.so libexec.lib.so
+	libart.lib.so libbacktrace.lib.so
+	libcutils.lib.so lwip.lib.so liblz4.lib.so
+	icu.lib.so libnativebridge.lib.so
+	libnativehelper.lib.so libnativeloader.lib.so
+	libsigchain.lib.so libutils.lib.so zlib.lib.so
+	libziparchive.lib.so unwind.lib.so
+	rtc_drv
+	dexdump2
+	test-dexdump
+}
+
+append_platform_drv_boot_modules
+build_boot_image $boot_modules
+
+append qemu_args " -m 1500 -nographic "
+run_genode_until {.*child "libbase_test" exited with exit value 0} 100
