@@ -18,6 +18,7 @@ namespace Componolit {
         private:
             Genode::Env &_env;
             Genode::Expanding_reporter _init_config;
+            Genode::Attached_rom_dataspace _config;
             Genode::Attached_rom_dataspace _init_state;
             unsigned int _exec_count = 0;
 
@@ -29,6 +30,7 @@ namespace Componolit {
             Libexec(Genode::Env &env)
             : _env(env)
             , _init_config(env, "config", "init_config")
+            , _config(env, "config")
             , _init_state(env, "init_state") { };
 
             int Exec (const char *app, const char *arguments[]);

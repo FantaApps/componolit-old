@@ -19,7 +19,19 @@ int Componolit::Libexec::Exec (const char *binary, const char *arguments[])
     enum { MAX_ARG_LEN = 48 };
     char app[MAX_ARG_LEN];
 
+    String<10> ram = "1M";
+    String<10> caps = "100";
+
     Timer::Connection _timer(_env);
+
+    _config.update();
+
+    try {
+        Xml_node libexec_config = _config.xml().sub_node("libexec");
+        ram = libexec_config.attribute_value("ram", ram);
+        caps = libexec_config.attribute_value("caps", caps);
+    }
+    catch (Xml_node::Nonexistent_sub_node) { }
 
     _init_config.generate([&] (Xml_generator &xml)
     {
@@ -33,6 +45,8 @@ int Componolit::Libexec::Exec (const char *binary, const char *arguments[])
             xml.node("service", [&] () { xml.attribute("name", "PD"); });
             xml.node("service", [&] () { xml.attribute("name", "ROM"); });
             xml.node("service", [&] () { xml.attribute("name", "File_system"); });
+            xml.node("service", [&] () { xml.attribute("name", "Timer"); });
+            xml.node("service", [&] () { xml.attribute("name", "Rtc"); });
         });
     
         xml.node("start", [&] ()
@@ -42,13 +56,12 @@ int Componolit::Libexec::Exec (const char *binary, const char *arguments[])
     
             xml.node("binary", [&] () { xml.attribute("name", binary); });
 
-            // FIXME: Make parameters configurable
-            xml.attribute("caps", "100");
+            xml.attribute("caps", caps);
     
             xml.node("resource", [&] ()
             {
                 xml.attribute("name", "RAM");
-                xml.attribute("quantum", "100M");
+                xml.attribute("quantum", ram);
             });
             xml.node("config", [&] ()
             {
