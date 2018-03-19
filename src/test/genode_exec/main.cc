@@ -3,14 +3,9 @@
 #include <exec_utils.h>
 #include <fstream>
 
-Genode::Env *genode_env;
-
-void Libc::Component::construct(Libc::Env &env)
+int main(int argc, char **argv)
 {
-	genode_env = &env;
-
-	Libc::with_libc([&] {
-
+        bool rv;
         std::vector<std::string> arguments;
         std::string error_msg;
 
@@ -19,7 +14,12 @@ void Libc::Component::construct(Libc::Env &env)
         arguments.push_back("SOME CONTENT");
 
         // Execute library main of library called 'write'
-        art::Exec(arguments, &error_msg);
+        rv = art::Exec(arguments, &error_msg);
+        if (!rv)
+        {
+            Genode::error("Error running write");
+            exit(1);
+        }
 
         // Check for file '/tmp/testfile.123' with content 'SOME CONTENT'
         std::string compare;
@@ -38,6 +38,19 @@ void Libc::Component::construct(Libc::Env &env)
             exit(2);
         }
 
+        std::vector<std::string> arguments2;
+
+        arguments2.push_back("write");
+        arguments2.push_back("/tmp/nonexistent/testfile.123");
+        arguments2.push_back("SOME CONTENT");
+
+        // Execute library main of library called 'write'
+        rv = art::Exec(arguments2, &error_msg);
+        if (rv)
+        {
+            Genode::error("Error detecting non-existent path");
+            exit(1);
+        }
+
         exit(0);
-	});
 }

@@ -58,20 +58,20 @@ install_config {
 	</start>
 
     <start name="apphost_config">
-        <resource name="RAM" quantum="1M"/>
+        <resource name="RAM" quantum="10M"/>
         <binary name="report_rom"/>
         <provides>
             <service name="Report"/>
             <service name="ROM"/>
         </provides>
-        <config verbose="no">
+        <config verbose="yes">
             <policy label="apphost -> config" report="test-genode_exec -> init_config"/>
             <policy label="test-genode_exec -> init_state" report="apphost -> state"/>
         </config>
     </start>
 
 	<start name="apphost" caps="1000">
-		<resource name="RAM" quantum="128M"/>
+		<resource name="RAM" quantum="300M"/>
         <binary name="init"/>
         <route>
             <service name="ROM" label="config"> <child name="apphost_config"/> </service>
@@ -83,6 +83,7 @@ install_config {
 	<start name="test-genode_exec">
 		<resource name="RAM" quantum="32M"/>
 		<config>
+			<libexec ram="20M" caps="200"/>
 			<vfs>
 				<dir name="tmp"> <fs/> </dir>
 				<dir name="dev"> <log/> <rtc/> </dir>
@@ -117,5 +118,5 @@ set boot_modules {
 append_platform_drv_boot_modules
 build_boot_image $boot_modules
 
-append qemu_args " -m 512 -nographic "
+append qemu_args " -m 1024 -nographic "
 run_genode_until {.*child "test-genode_exec" exited with exit value 0} 100

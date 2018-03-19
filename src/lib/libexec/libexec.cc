@@ -47,6 +47,7 @@ int Componolit::Libexec::Exec (const char *binary, const char *arguments[])
             xml.node("service", [&] () { xml.attribute("name", "File_system"); });
             xml.node("service", [&] () { xml.attribute("name", "Timer"); });
             xml.node("service", [&] () { xml.attribute("name", "Rtc"); });
+            xml.node("service", [&] () { xml.attribute("name", "Report"); });
         });
     
         xml.node("start", [&] ()
