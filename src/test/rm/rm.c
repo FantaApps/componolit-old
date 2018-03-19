@@ -72,6 +72,9 @@ void	rm_tree(char **);
 static void siginfo(int __unused);
 int usage(void);
 
+int undelete(const char *path) { return -1; };
+int lchflags(const char *path, int flags) { return -1; };
+
 /*
  * rm --
  *	This rm is different from historic rm's, but is expected to match
