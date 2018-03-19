@@ -4,6 +4,7 @@
 #include <base/attached_rom_dataspace.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 
 extern "C"
 int main (int argc, char **argv);
@@ -97,6 +98,10 @@ void Libc::Component::construct(Libc::Env &env)
     }
 
 	Libc::with_libc([&] {
-        return main(_arguments.argc(), _arguments.argv());
+        try {
+            exit(main(_arguments.argc(), _arguments.argv()));
+        } catch (...) {
+            exit(-1);
+        }
 	});
 }
