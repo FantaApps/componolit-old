@@ -9,8 +9,8 @@ set build_components {
 	server/ram_fs
 	test/rm
 	test/diff
-	test/dexdump2
 	test/unzip
+	app/dexdump2
 	app/dexlayout
 	test/libart-dexlayout
 }
@@ -48,12 +48,10 @@ install_config {
 		<provides> <service name="Timer"/> </provides>
 	</start>
 
-<!--
 	<start name="rtc_drv">
 		<resource name="RAM" quantum="1M"/>
 		<provides> <service name="Rtc"/> </provides>
 	</start>
--->
 
 	<start name="ram_fs">
 		<resource name="RAM" quantum="1000M"/>
@@ -70,14 +68,14 @@ install_config {
             <service name="Report"/>
             <service name="ROM"/>
         </provides>
-        <config verbose="no">
+        <config verbose="yes">
             <policy label="apphost -> config" report="libart-dexlayout_test -> init_config"/>
             <policy label="libart-dexlayout_test -> init_state" report="apphost -> state"/>
         </config>
     </start>
 
 	<start name="apphost" caps="1000">
-		<resource name="RAM" quantum="128M"/>
+		<resource name="RAM" quantum="500M"/>
         <binary name="init"/>
         <route>
             <service name="ROM" label="config"> <child name="apphost_config"/> </service>
@@ -89,6 +87,7 @@ install_config {
 	<start name="libart-dexlayout_test">
 		<resource name="RAM" quantum="1000MB"/>
 		<config ld_bind_now="no">
+			<libexec ram="450MB" caps="200"/>
 			<vfs>
 				<dir name="tmp"> <fs/> </dir>
 				<dir name="dev">
