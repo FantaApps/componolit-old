@@ -6,19 +6,9 @@
 
 #include <gtest/gtest.h>
 
-void Libc::Component::construct(Libc::Env &env)
+int
+main(int argc, char **argv)
 {
-	Libc::with_libc([&] {
-
-		char const *argv[] = {
-			"/bin/test_dex2oat",
-			"--gtest_filter=-None",
-			0
-		};
-		int argc = 2;
-
-		setprogname ("/bin/test_libutils");
-		testing::InitGoogleTest(&argc, (char **)argv);
-		exit (RUN_ALL_TESTS());
-	});
+	testing::InitGoogleTest(&argc, argv);
+	exit (RUN_ALL_TESTS());
 }
