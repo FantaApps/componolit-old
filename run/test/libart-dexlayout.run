@@ -6,7 +6,7 @@ set build_components {
 	core init
 	drivers/timer
 	drivers/rtc
-	server/ram_fs
+	server/vfs
 	test/rm
 	test/diff
 	test/unzip
@@ -53,35 +53,43 @@ install_config {
 		<provides> <service name="Rtc"/> </provides>
 	</start>
 
-	<start name="ram_fs">
+	<start name="vfs">
 		<resource name="RAM" quantum="1000M"/>
 		<provides> <service name="File_system"/> </provides>
 		<config>
+			<vfs>
+				<dir name="tmp"> <ram/> </dir>
+				<dir name="android">
+					<dir name="framework">
+						<tar name="framework.tar"/>
+					</dir>
+				</dir>
+			</vfs>
 			<default-policy root="/" writeable="true" />
 		</config>
 	</start>
 
-    <start name="apphost_config">
-        <resource name="RAM" quantum="1M"/>
-        <binary name="report_rom"/>
-        <provides>
-            <service name="Report"/>
-            <service name="ROM"/>
-        </provides>
-        <config verbose="yes">
-            <policy label="apphost -> config" report="libart-dexlayout_test -> init_config"/>
-            <policy label="libart-dexlayout_test -> init_state" report="apphost -> state"/>
-        </config>
-    </start>
+	<start name="apphost_config">
+		<resource name="RAM" quantum="1M"/>
+		<binary name="report_rom"/>
+		<provides>
+			<service name="Report"/>
+			<service name="ROM"/>
+			</provides>
+		<config verbose="yes">
+			<policy label="apphost -> config" report="libart-dexlayout_test -> init_config"/>
+			<policy label="libart-dexlayout_test -> init_state" report="apphost -> state"/>
+		</config>
+	</start>
 
 	<start name="apphost" caps="1000">
 		<resource name="RAM" quantum="500M"/>
-        <binary name="init"/>
-        <route>
-            <service name="ROM" label="config"> <child name="apphost_config"/> </service>
-            <service name="Report"> <child name="apphost_config"/> </service>
-		    <any-service> <parent/> <any-child/> </any-service>
-        </route>
+			<binary name="init"/>
+			<route>
+				<service name="ROM" label="config"> <child name="apphost_config"/> </service>
+				<service name="Report"> <child name="apphost_config"/> </service>
+				<any-service> <parent/> <any-child/> </any-service>
+			</route>
 	</start>
 
 	<start name="libart-dexlayout_test">
@@ -92,7 +100,6 @@ install_config {
 				<arg value="--gtest_filter=-None"/>
 			</argv>
 			<vfs>
-				<dir name="tmp"> <fs/> </dir>
 				<dir name="dev">
 					<log/>
 					<rtc/>
@@ -103,13 +110,15 @@ install_config {
 						<tar name="framework.tar"/>
 					</dir>
 				</dir>
+				<fs/>
 			</vfs>
 			<libc stdout="/dev/log" stderr="/dev/log" rtc="/dev/rtc" />
 		</config>
-        <route>
-            <service name="ROM" label="init_state"> <child name="apphost_config"/> </service>
-		    <any-service> <parent/> <any-child/> </any-service>
-        </route>
+		<route>
+			<service name="ROM" label="init_state"> <child name="apphost_config"/> </service>
+			<service name="File_system"> <child name="vfs"/> </service>
+			<any-service> <parent/> <any-child/> </any-service>
+		</route>
 	</start>
 </config>}
 
@@ -130,7 +139,7 @@ exec tar cfv bin/framework.tar -h -C $::env(ANDROID_FRAMEWORK_DIR) core-oj-hostd
 # generic modules
 set boot_modules {
 	core init ld.lib.so
-	timer ram_fs
+	timer vfs
 	rtc_drv
 	libc.lib.so libm.lib.so
 	unwind.lib.so
