@@ -7,8 +7,7 @@ set build_components {
 	drivers/timer
 	drivers/rtc
 	server/ram_fs
-	test/build-diff
-	test/diff
+	app/diff
 }
 
 source ${genode_dir}/repos/base/run/platform_drv.inc
@@ -53,21 +52,32 @@ install_config {
 		<resource name="RAM" quantum="128M"/>
 		<provides> <service name="File_system"/> </provides>
 		<config>
+            <content>
+                <rom name="test1.dat"/>
+                <rom name="test1trunc.dat"/>
+                <rom name="test2.dat"/>
+            </content>
 			<default-policy root="/" writeable="true" />
 		</config>
 	</start>
 
-	<start name="test-diff">
+	<start name="diff">
 		<resource name="RAM" quantum="32M"/>
 		<config>
+            <argv progname="diff"><arg value="test"/></argv>
 			<vfs>
-				<dir name="tmp"> <fs/> </dir>
 				<dir name="dev"> <log/> <rtc/> </dir>
+                <fs/>
 			</vfs>
 			<libc stdout="/dev/log" stderr="/dev/log" rtc="/dev/rtc" />
 		</config>
 	</start>
 </config>}
+
+
+exec cp -fv [genode_dir]/repos/componolit/src/app/diff/test1.dat bin/
+exec cp -fv [genode_dir]/repos/componolit/src/app/diff/test1trunc.dat bin/
+exec cp -fv [genode_dir]/repos/componolit/src/app/diff/test2.dat bin/
 
 #
 # Boot image
@@ -79,14 +89,14 @@ set boot_modules {
 	timer ram_fs
     cxxthreads.lib.so
 	libc.lib.so libm.lib.so posix.lib.so pthread.lib.so stdcxx.lib.so
-	libbase.lib.so liblog.lib.so
-	diff.lib.so
+	libbase.lib.so liblog.lib.so libargv.lib.so
 	rtc_drv
-	test-diff
+	diff
+    test1.dat test1trunc.dat test2.dat
 }
 
 append_platform_drv_boot_modules
 build_boot_image $boot_modules
 
 append qemu_args " -m 512 -nographic "
-run_genode_until {.*child "test-diff" exited with exit value 42} 100
+run_genode_until {.*child "diff" exited with exit value 0} 100
