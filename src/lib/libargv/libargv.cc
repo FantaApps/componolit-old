@@ -11,36 +11,61 @@ int main (int argc, char **argv);
 
 Genode::Env *genode_env;
 
-template <size_t CAPACITY, size_t MAXARGS>
+template <size_t CAPACITY, int MAXARGS>
 class Arguments
 {
-    private:
-        char        *_argv[MAXARGS];
-        char         _buffer[CAPACITY];
-        size_t       _offset = 0;
-        unsigned int _argc = 0;
-
     public:
+        class Out_of_memory       : public Genode::Exception { };
+        class Too_many_arguments  : public Genode::Exception { };
+        class Args_already_frozen : public Genode::Exception { };
 
-        class Out_of_memory      : public Genode::Exception { };
-        class Too_many_arguments : public Genode::Exception { };
+    private:
+        char    *_argv[MAXARGS];
+        char    _buffer[CAPACITY];
+        size_t  _offset = 0;
+        int     _argc = 0;
+        bool    _is_terminated = false;
 
-        Arguments() { };
-
-        char * alloc(size_t size)
+        char * _alloc(size_t size)
         {
+            if (_is_terminated) throw Args_already_frozen();
             if (_argc >= MAXARGS) throw Too_many_arguments();
             if (_offset + size >= CAPACITY) throw Out_of_memory();
 
             _argv[_argc] = &_buffer[_offset];
             char *result = _argv[_argc];
-            _argc++;
             _offset += size + 1;
             return result;
         }
 
-        char ** argv() { return _argv; }
-        int argc() { return _argc; }
+        void _terminate(void)
+        {
+            _argv[_argc] = nullptr;
+            _is_terminated = true;
+        }
+
+    public:
+
+        Arguments() { };
+
+        char * alloc(size_t size)
+        {
+            char *result = _alloc(size);
+            _argc++;
+            return result;
+        }
+
+        char ** argv()
+        {
+            if (!_is_terminated) _terminate();
+            return _argv;
+        }
+
+        int argc()
+        {
+            if (!_is_terminated) _terminate();
+            return _argc;
+        }
 
 };
 
@@ -97,11 +122,8 @@ void Libc::Component::construct(Libc::Env &env)
         log("No argv configured");
     }
 
-	Libc::with_libc([&] {
-        try {
-            exit(main(_arguments.argc(), _arguments.argv()));
-        } catch (...) {
-            exit(-1);
-        }
-	});
+    Libc::with_libc([&] {
+        setprogname (_arguments.argv()[0]);
+        exit(main(_arguments.argc(), _arguments.argv()));
+    });
 }
