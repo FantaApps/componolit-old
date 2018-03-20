@@ -88,6 +88,9 @@ install_config {
 		<resource name="RAM" quantum="1000MB"/>
 		<config ld_bind_now="no">
 			<libexec ram="450MB" caps="200"/>
+			<argv progname="libart-dexlayout_test">
+				<arg value="--gtest_filter=-None"/>
+			</argv>
 			<vfs>
 				<dir name="tmp"> <fs/> </dir>
 				<dir name="dev">

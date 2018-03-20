@@ -21,8 +21,7 @@ SRC_CC += common_runtime_test.cc
 $(warning SUPPRESSING WARNINGS - REMOVE FOR PRODUCTION!)
 CC_OPT += -w
 
-SRC_CC += main.cc
-LIBS   += gtest libart unwind
+LIBS   += gtest libart unwind libargv
 
 # Silence excessive getpid() and getrlimit() warnings
 LIBS += libsilence
