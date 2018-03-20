@@ -79,20 +79,19 @@ int Componolit::Libexec::Exec (const char *binary, const char *arguments[])
                 {
                     xml.node("dir", [&] ()
                     {
-                        xml.attribute("name", "tmp");
-                        xml.node("fs", [&] () { });
-                    });
-    
-                    xml.node("dir", [&] ()
-                    {
                         xml.attribute("name", "dev");
                         xml.node("log", [&] () { });
+                        xml.node("rtc", [&] () { });
+                        xml.node("null", [&] () { });
                     });
+
+                    xml.node("fs", [&] () { });
                 });
                 xml.node("libc", [&] ()
                 {
                     xml.attribute("stdout", "/dev/log");
                     xml.attribute("stderr", "/dev/log");
+                    xml.attribute("rtc", "/dev/rtc");
                 });
             });
     
