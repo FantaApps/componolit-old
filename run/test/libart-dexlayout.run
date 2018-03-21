@@ -9,7 +9,7 @@ set build_components {
 	server/vfs
 	test/rm
 	test/diff
-	test/unzip
+	app/unzip
 	app/dexdump2
 	app/dexlayout
 	test/libart-dexlayout
