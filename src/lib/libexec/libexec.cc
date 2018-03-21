@@ -21,6 +21,7 @@ int Componolit::Libexec::Exec (const char *binary, const char *arguments[])
 
     String<10> ram = "1M";
     String<10> caps = "100";
+    bool verbose = false;
 
     Timer::Connection _timer(_env);
 
@@ -30,8 +31,14 @@ int Componolit::Libexec::Exec (const char *binary, const char *arguments[])
         Xml_node libexec_config = _config.xml().sub_node("libexec");
         ram = libexec_config.attribute_value("ram", ram);
         caps = libexec_config.attribute_value("caps", caps);
+        verbose = libexec_config.attribute_value("verbose", false);
     }
     catch (Xml_node::Nonexistent_sub_node) { }
+
+    if (verbose)
+    {
+        log("Starting ", Genode::Cstring(binary), " with ram=", ram, " caps=", caps);
+    }
 
     _init_config.generate([&] (Xml_generator &xml)
     {
@@ -119,7 +126,11 @@ int Componolit::Libexec::Exec (const char *binary, const char *arguments[])
             }
         });
 
-        if (exists and exited) return code;
+        if (exists and exited)
+        {
+            if (verbose) log("Exiting with code ", code);
+            return code;
+        }
         _timer.msleep(delay_ms/2);
     };
 };
