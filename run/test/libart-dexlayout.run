@@ -8,7 +8,7 @@ set build_components {
 	drivers/rtc
 	server/vfs
 	test/rm
-	test/diff
+	app/diff
 	app/unzip
 	app/dexdump2
 	app/dexlayout
