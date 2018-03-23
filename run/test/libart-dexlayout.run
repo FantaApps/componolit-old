@@ -165,4 +165,4 @@ append_platform_drv_boot_modules
 build_boot_image $boot_modules
 
 append qemu_args " -m 3000 -nographic "
-run_genode_until {.*child "libart-dexlayout-test" exited with exit value 0} 1000
+run_genode_until {.*child "libart-dexlayout_test" exited with exit value 0} 1000
