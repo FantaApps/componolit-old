@@ -105,11 +105,6 @@ install_config {
 					<rtc/>
 					<null/>
 				</dir>
-				<dir name="android">
-					<dir name="framework">
-						<tar name="framework.tar"/>
-					</dir>
-				</dir>
 				<fs/>
 			</vfs>
 			<libc stdout="/dev/log" stderr="/dev/log" rtc="/dev/rtc" />
