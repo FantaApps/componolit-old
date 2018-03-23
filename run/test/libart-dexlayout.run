@@ -25,7 +25,7 @@ create_boot_directory
 #
 
 install_config {
-<config verbose="yes">
+<config verbose="no">
 	<parent-provides>
 		<service name="ROM"/>
 		<service name="CAP"/>
@@ -76,7 +76,7 @@ install_config {
 			<service name="Report"/>
 			<service name="ROM"/>
 			</provides>
-		<config verbose="yes">
+		<config verbose="no">
 			<policy label="apphost -> config" report="libart-dexlayout_test -> init_config"/>
 			<policy label="libart-dexlayout_test -> init_state" report="apphost -> state"/>
 		</config>
@@ -95,7 +95,7 @@ install_config {
 	<start name="libart-dexlayout_test">
 		<resource name="RAM" quantum="1000MB"/>
 		<config ld_bind_now="no">
-			<libexec ram="450MB" caps="200"/>
+			<libexec ram="450MB" caps="500" verbose="no"/>
 			<argv progname="libart-dexlayout_test">
 				<arg value="--gtest_filter=-None"/>
 			</argv>
