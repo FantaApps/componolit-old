@@ -19,10 +19,13 @@ SRC_C = \
 	unzip.c \
 	zipinfo.c \
 
-INC_DIR += $(call select_from_repositories,src/lib/test/unzip)
+INC_DIR += $(call select_from_repositories,src/app/unzip)
 INC_DIR += $(UNZIP_DIR)
 vpath %.c $(UNZIP_DIR) $(UNZIP_DIR)/unix
 
+SRC_C += full_write.c
+
 CC_OPT += -DNO_LCHMOD -DNO_LCHOWN
+CC_OPT_fileio += -Dwrite=full_write
 
 LIBS += libc libargv
