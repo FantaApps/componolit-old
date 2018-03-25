@@ -62,6 +62,7 @@ install_config {
 				<dir name="android">
 					<dir name="framework">
 						<tar name="framework.tar"/>
+						<rom name="art-gtest-ManyMethods.jar"/>
 					</dir>
 				</dir>
 			</vfs>
@@ -127,6 +128,8 @@ if {![info exists ::env(ANDROID_FRAMEWORK_DIR)]} {
 puts "\nexec tar cfv bin/framework.tar -h -C $::env(ANDROID_FRAMEWORK_DIR) *.jar\n"
 exec tar cfv bin/framework.tar -h -C $::env(ANDROID_FRAMEWORK_DIR) core-oj-hostdex.jar core-libart-hostdex.jar
 
+exec cp [genode_dir]/repos/componolit/src/test/libart-dexlayout/art-gtest-ManyMethods.jar bin/
+
 #
 # Boot image
 #
@@ -160,6 +163,7 @@ set boot_modules {
 	unzip
 	framework.tar
 	libart-dexlayout_test
+	art-gtest-ManyMethods.jar
 }
 
 append_platform_drv_boot_modules
