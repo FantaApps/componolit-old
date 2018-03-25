@@ -23,9 +23,7 @@ INC_DIR += $(call select_from_repositories,src/app/unzip)
 INC_DIR += $(UNZIP_DIR)
 vpath %.c $(UNZIP_DIR) $(UNZIP_DIR)/unix
 
-SRC_C += full_write.c
-
 CC_OPT += -DNO_LCHMOD -DNO_LCHOWN
-CC_OPT_fileio += -Dwrite=full_write
+CC_OPT_fileio += -Dwrite=rwall_write
 
-LIBS += libc libargv
+LIBS += libc libargv librwall
