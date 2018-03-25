@@ -48,15 +48,15 @@ install_config {
 		<provides> <service name="Rtc"/> </provides>
 	</start>
 
-	<start name="ram_fs">
+	<start name="vfs">
 		<resource name="RAM" quantum="128M"/>
 		<provides> <service name="File_system"/> </provides>
 		<config>
-            <content>
+            <vfs>
                 <rom name="test1.dat"/>
                 <rom name="test1trunc.dat"/>
                 <rom name="test2.dat"/>
-            </content>
+            </vfs>
 			<default-policy root="/" writeable="true" />
 		</config>
 	</start>
@@ -86,7 +86,7 @@ exec cp -fv [genode_dir]/repos/componolit/src/app/diff/test2.dat bin/
 # generic modules
 set boot_modules {
 	core init ld.lib.so
-	timer ram_fs
+	timer vfs
     cxxthreads.lib.so
 	libc.lib.so libm.lib.so posix.lib.so pthread.lib.so stdcxx.lib.so
 	libbase.lib.so liblog.lib.so libargv.lib.so
