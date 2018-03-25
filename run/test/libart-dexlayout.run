@@ -152,6 +152,7 @@ set boot_modules {
 	libart-dexlayout.lib.so
 	libexec.lib.so
 	libargv.lib.so
+	librwall.lib.so
 	rm
 	diff
 	dexdump2

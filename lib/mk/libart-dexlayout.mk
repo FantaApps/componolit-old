@@ -12,3 +12,6 @@ include $(call select_from_repositories,lib/mk/android-lib.inc)
 # dexlayout includes jni.h which is provided by libnativehelper. As it
 # is not a dependency in Android.bp, we need to add it manually.
 LIBS += libnativehelper
+
+# FIXME: Wrapper to work around genodelabs/genode#2714, remove once fixed.
+LIBS += librwall
