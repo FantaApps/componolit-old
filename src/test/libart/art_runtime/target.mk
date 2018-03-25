@@ -19,9 +19,7 @@ CC_OPT += -Wno-error=unused-parameter
 # FIXME: SUPPRESS WARNINGS! DEVELOPMENT ONLY - REMOVE FOR PRODUCTION!
 $(warning SUPPRESSING WARNINGS - REMOVE FOR PRODUCTION!)
 CC_OPT += -w
-
-SRC_CC += main.cc
-LIBS   += gtest posix valgrind dlmalloc libcore_includes libart icu unwind
+LIBS   += gtest posix valgrind dlmalloc libcore_includes libart icu unwind libargv
 
 # Silence excessive getpid() and getrlimit() warnings
 LIBS += libsilence

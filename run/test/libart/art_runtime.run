@@ -6,7 +6,7 @@ set build_components {
 	core init
 	drivers/timer
 	drivers/rtc
-	server/ram_fs
+	server/vfs
 	test/libart/art_runtime
 }
 
@@ -43,17 +43,24 @@ install_config {
 		<provides> <service name="Timer"/> </provides>
 	</start>
 
-<!--
 	<start name="rtc_drv">
 		<resource name="RAM" quantum="1M"/>
 		<provides> <service name="Rtc"/> </provides>
 	</start>
--->
 
-	<start name="ram_fs">
+	<start name="vfs">
 		<resource name="RAM" quantum="128M"/>
 		<provides> <service name="File_system"/> </provides>
 		<config>
+			<vfs>
+				<dir name="tmp"> <ram/> </dir>
+				<dir name="android">
+					<dir name="framework">
+						<tar name="framework.tar"/>
+						<rom name="art-gtest-ProfileTestMultiDex.jar"/>
+					</dir>
+				</dir>
+			</vfs>
 			<default-policy root="/" writeable="true" />
 		</config>
 	</start>
@@ -61,17 +68,15 @@ install_config {
 	<start name="art_runtime_test">
 		<resource name="RAM" quantum="1500MB"/>
 		<config>
+ 			<argv progname="art_runtime_test">
+ 				<arg value="--gtest_filter=-None"/>
+ 			</argv>
 			<vfs>
-				<dir name="tmp"> <fs/> </dir>
 				<dir name="dev">
 					<log/>
 					<rtc/>
 				</dir>
-				<dir name="android">
-					<dir name="framework">
-						<tar name="framework.tar"/>
-					</dir>
-				</dir>
+				<fs/>
 			</vfs>
 			<libc stdout="/dev/log" stderr="/dev/log" rtc="/dev/rtc" />
 		</config>
@@ -88,6 +93,8 @@ if {![info exists ::env(ANDROID_FRAMEWORK_DIR)]} {
 puts "\nexec tar cfv bin/framework.tar -h -C $::env(ANDROID_FRAMEWORK_DIR) *.jar\n"
 exec tar cfv bin/framework.tar -h -C $::env(ANDROID_FRAMEWORK_DIR) core-oj-hostdex.jar core-libart-hostdex.jar
 
+exec cp [genode_dir]/repos/componolit/src/test/libart/art_runtime/art-gtest-ProfileTestMultiDex.jar bin/
+
 #
 # Boot image
 #
@@ -95,7 +102,7 @@ exec tar cfv bin/framework.tar -h -C $::env(ANDROID_FRAMEWORK_DIR) core-oj-hostd
 # generic modules
 set boot_modules {
 	core init ld.lib.so
-	timer ram_fs
+	timer vfs
 	rtc_drv
 	libc.lib.so libm.lib.so
 	unwind.lib.so
@@ -109,7 +116,10 @@ set boot_modules {
 	libutils.lib.so zlib.lib.so libziparchive.lib.so
 	libsigchain.lib.so
 	libsilence.lib.so
+	libargv.lib.so
+	libexec.lib.so
 	framework.tar
+	art-gtest-ProfileTestMultiDex.jar
 	art_runtime_test
 }
 
