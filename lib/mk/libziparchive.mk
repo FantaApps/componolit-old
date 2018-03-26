@@ -9,9 +9,5 @@ LIBZIPARCHIVE_DIR = $(call select_from_repositories,src/lib/libziparchive)
 vpath %.cc $(LIBZIPARCHIVE_DIR)
 INC_DIR += $(LIBZIPARCHIVE_DIR)
 
-# Use local implementations of lseek64/pread64
-CC_OPT += -include ops64.h
-SRC_CC += ops64.cc
-
-LIBS += zlib
+LIBS += zlib librwall
 CC_OPT += -Wno-error=unused-variable

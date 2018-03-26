@@ -92,6 +92,7 @@ set boot_modules {
 	libcutils.lib.so libutils.lib.so zlib.lib.so
 	libbacktrace.lib.so
 	libargv.lib.so
+	librwall.lib.so
 	rtc_drv
 	libziparchive_test
 	testdata.tar
