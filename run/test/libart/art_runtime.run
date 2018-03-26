@@ -57,7 +57,7 @@ install_config {
 				<dir name="android">
 					<dir name="framework">
 						<tar name="framework.tar"/>
-						<rom name="art-gtest-ProfileTestMultiDex.jar"/>
+						<tar name="testdata.tar"/>
 					</dir>
 				</dir>
 			</vfs>
@@ -93,7 +93,7 @@ if {![info exists ::env(ANDROID_FRAMEWORK_DIR)]} {
 puts "\nexec tar cfv bin/framework.tar -h -C $::env(ANDROID_FRAMEWORK_DIR) *.jar\n"
 exec tar cfv bin/framework.tar -h -C $::env(ANDROID_FRAMEWORK_DIR) core-oj-hostdex.jar core-libart-hostdex.jar
 
-exec cp [genode_dir]/repos/componolit/src/test/libart/art_runtime/art-gtest-ProfileTestMultiDex.jar bin/
+exec tar cfv bin/testdata.tar -h -C [genode_dir]/repos/componolit/src/test/libart/art_runtime/ art-gtest-ProfileTestMultiDex.jar
 
 #
 # Boot image
@@ -119,7 +119,7 @@ set boot_modules {
 	libargv.lib.so
 	libexec.lib.so
 	framework.tar
-	art-gtest-ProfileTestMultiDex.jar
+	testdata.tar
 	art_runtime_test
 }
 
