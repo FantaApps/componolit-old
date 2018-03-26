@@ -11,6 +11,10 @@ SRC_CC += main.cc
 CC_OPT += -Wno-error=unused-variable
 LIBS   += gtest libziparchive zlib libutils libbacktrace
 
+# Include local implementation of lseek64/pread64
+INC_DIR += $(call select_from_repositories,src/lib/libziparchive)
+CC_OPT += -include ops64.h
+
 TESTDATA = bad_crc.zip declaredlength.zip dummy-update.zip large.zip valid.zip bad_filename.zip crash.apk
 
 $(TARGET): $(INSTALL_DIR)/testdata.tar

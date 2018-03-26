@@ -6,7 +6,7 @@ set build_components {
 	core init
 	drivers/timer
 	drivers/rtc
-	server/ram_fs
+	server/vfs
 	test/libziparchive
 }
 
@@ -48,10 +48,14 @@ install_config {
 		<provides> <service name="Rtc"/> </provides>
 	</start>
 
-	<start name="ram_fs">
+	<start name="vfs">
 		<resource name="RAM" quantum="128M"/>
 		<provides> <service name="File_system"/> </provides>
 		<config>
+            <vfs>
+				<dir name="tmp"> <ram/> </dir>
+				<tar name="testdata.tar"/>
+            </vfs>
 			<default-policy root="/" writeable="true" />
 		</config>
 	</start>
@@ -60,13 +64,12 @@ install_config {
 		<resource name="RAM" quantum="128M"/>
 		<config>
 			<vfs>
-				<dir name="tmp"> <fs/> </dir>
-				<tar name="testdata.tar"/>
 				<dir name="dev">
 					<log/>
 					<rtc/>
 					<dir name="socket"> <fs/> </dir>
 				</dir>
+                <fs/>
 			</vfs>
 			<libc stdout="/dev/log" stderr="/dev/log" rtc="/dev/rtc" />
 		</config>
@@ -80,7 +83,7 @@ install_config {
 # generic modules
 set boot_modules {
 	core init ld.lib.so
-	timer ram_fs
+	timer vfs
 	libc.lib.so libm.lib.so
 	cxxthreads.lib.so
 	posix.lib.so pthread.lib.so stdcxx.lib.so
@@ -88,6 +91,7 @@ set boot_modules {
 	liblog.lib.so libbase.lib.so libziparchive.lib.so
 	libcutils.lib.so libutils.lib.so zlib.lib.so
 	libbacktrace.lib.so
+	libargv.lib.so
 	rtc_drv
 	libziparchive_test
 	testdata.tar
