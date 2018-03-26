@@ -63,6 +63,9 @@ install_config {
 	<start name="libziparchive_test">
 		<resource name="RAM" quantum="128M"/>
 		<config>
+			<argv progname="test_libziparchive">
+				<arg value="--test_data_dir=/"/>
+			</argv>
 			<vfs>
 				<dir name="dev">
 					<log/>
@@ -75,6 +78,9 @@ install_config {
 		</config>
 	</start>
 </config>}
+
+
+exec tar cfv bin/testdata.tar -h -C [genode_dir]/repos/componolit/src/test/libziparchive bad_crc.zip declaredlength.zip dummy-update.zip large.zip valid.zip bad_filename.zip crash.apk
 
 #
 # Boot image
