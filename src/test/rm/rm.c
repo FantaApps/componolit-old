@@ -111,7 +111,6 @@ main(int argc, char *argv[])
 	Pflag = rflag = 0;
 	while ((ch = getopt(argc, argv, "dfiIPRrvW")) != -1)
     {
-        printf("getopt: %c\n", ch);
 		switch(ch) {
 		case 'd':
 			dflag = 1;
@@ -145,14 +144,12 @@ main(int argc, char *argv[])
 			return usage();
 		}
     }
-    printf("rm: optind =  (%d)", optind);
 	argc -= optind;
 	argv += optind;
 
 	if (argc < 1) {
 		if (fflag)
 			return (0);
-        printf("rm: argc < 1 (%d)", argc);
 		return usage();
 	}
 
