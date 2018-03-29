@@ -65,6 +65,29 @@ install_config {
 		</config>
 	</start>
 
+	<start name="apphost_config">
+		<resource name="RAM" quantum="1M"/>
+		<binary name="report_rom"/>
+		<provides>
+			<service name="Report"/>
+			<service name="ROM"/>
+			</provides>
+		<config verbose="no">
+			<policy label="apphost -> config" report="art_runtime_test -> init_config"/>
+			<policy label="art_runtime_test -> init_state" report="apphost -> state"/>
+		</config>
+	</start>
+
+	<start name="apphost" caps="1000">
+		<resource name="RAM" quantum="500M"/>
+			<binary name="init"/>
+			<route>
+				<service name="ROM" label="config"> <child name="apphost_config"/> </service>
+				<service name="Report"> <child name="apphost_config"/> </service>
+				<any-service> <parent/> <any-child/> </any-service>
+			</route>
+	</start>
+
 	<start name="art_runtime_test" caps="1000">
 		<resource name="RAM" quantum="1500MB"/>
 		<config>
@@ -80,6 +103,11 @@ install_config {
 			</vfs>
 			<libc stdout="/dev/log" stderr="/dev/log" rtc="/dev/rtc" />
 		</config>
+		<route>
+			<service name="ROM" label="init_state"> <child name="apphost_config"/> </service>
+			<service name="File_system"> <child name="vfs"/> </service>
+			<any-service> <parent/> <any-child/> </any-service>
+		</route>
 	</start>
 </config>}
 
@@ -93,8 +121,7 @@ if {![info exists ::env(ANDROID_FRAMEWORK_DIR)]} {
 puts "\nexec tar cfv bin/framework.tar -h -C $::env(ANDROID_FRAMEWORK_DIR) *.jar\n"
 exec tar cfv bin/framework.tar -h -C $::env(ANDROID_FRAMEWORK_DIR) core-oj-hostdex.jar core-libart-hostdex.jar
 
-exec tar cfv bin/testdata.tar -h -C [genode_dir]/repos/componolit/src/test/libart/art_runtime/ art-gtest-ProfileTestMultiDex.jar art-gtest-Man
-yMethods.jar
+exec tar cfv bin/testdata.tar -h -C [genode_dir]/repos/componolit/src/test/libart/art_runtime/ art-gtest-ProfileTestMultiDex.jar art-gtest-ManyMethods.jar
 
 #
 # Boot image
