@@ -81,4 +81,4 @@ LIBS += pthread
 # Add libart-defaults.inc to list of Android makefiles to rebuild android.mk when it changes
 ANDROID_MK += $(call select_from_repositories,lib/mk/libart-defaults.inc)
 
-LIBS += valgrind dlmalloc zlib icu cmdline libziparchive pthread
+LIBS += valgrind dlmalloc zlib icu cmdline libziparchive pthread librwall

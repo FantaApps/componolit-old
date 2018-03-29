@@ -118,6 +118,7 @@ set boot_modules {
 	libsilence.lib.so
 	libargv.lib.so
 	libexec.lib.so
+	librwall.lib.so
 	framework.tar
 	testdata.tar
 	art_runtime_test
