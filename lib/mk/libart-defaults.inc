@@ -13,10 +13,10 @@ ANDROID_EXCLUDE_OPT += \
 	-Wno-frame-larger-than=
 
 # Use sources from runtime
-ANDROID_SOURCES ?= runtime
+ANDROID_SOURCES += runtime
 
 # include runtime and runtime/arch
-ANDROID_INCLUDES = runtime runtime/arch
+ANDROID_INCLUDES += runtime runtime/arch
 
 # Filter out known warnings that cause trouble with our toolchain
 # -Wshadow:
