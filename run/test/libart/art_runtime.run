@@ -65,7 +65,7 @@ install_config {
 		</config>
 	</start>
 
-	<start name="art_runtime_test">
+	<start name="art_runtime_test" caps="1000">
 		<resource name="RAM" quantum="1500MB"/>
 		<config>
  			<argv progname="art_runtime_test">
@@ -93,7 +93,8 @@ if {![info exists ::env(ANDROID_FRAMEWORK_DIR)]} {
 puts "\nexec tar cfv bin/framework.tar -h -C $::env(ANDROID_FRAMEWORK_DIR) *.jar\n"
 exec tar cfv bin/framework.tar -h -C $::env(ANDROID_FRAMEWORK_DIR) core-oj-hostdex.jar core-libart-hostdex.jar
 
-exec tar cfv bin/testdata.tar -h -C [genode_dir]/repos/componolit/src/test/libart/art_runtime/ art-gtest-ProfileTestMultiDex.jar
+exec tar cfv bin/testdata.tar -h -C [genode_dir]/repos/componolit/src/test/libart/art_runtime/ art-gtest-ProfileTestMultiDex.jar art-gtest-Man
+yMethods.jar
 
 #
 # Boot image
