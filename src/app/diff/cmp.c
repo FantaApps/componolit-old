@@ -18,13 +18,29 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 #define error(fmt,...) { printf(fmt ": %s\n", ##__VA_ARGS__, strerror(errno)); return -1; };
 #define errorx(fmt,...) { printf(fmt "\n", ##__VA_ARGS__); return -1; };
 
+static void
+dump(unsigned char *buffer, size_t len)
+{
+    for (size_t i = 0; i < len; i++)
+    {
+        printf("%c", buffer[i]);
+    }
+    printf("\n");
+}
+
 static int
 cmp(char *lpath, char *rpath)
 {
+    struct stat sbl, sbr;
+    stat(lpath, &sbl);
+    stat(rpath, &sbr);
+    printf("Comparing \"%s\" (%ld) and \"%s\" (%ld)\n", lpath, sbl.st_size, rpath, sbr.st_size);
+
     int lfd, rfd;
 
     enum { BUFSIZE = 4096 };
@@ -54,8 +70,17 @@ cmp(char *lpath, char *rpath)
             rpos = 0;
         }
 
-        if (lfill == 0 && rfill  > 0) errorx("%s is longer", rpath);
-        if (lfill  > 0 && rfill == 0) errorx("%s is longer", lpath);
+        if (lfill == 0 && rfill  > 0)
+        {
+            dump(rbuf, rfill - rpos);
+            errorx("%s is longer", rpath);
+        }
+
+        if (lfill  > 0 && rfill == 0)
+        {
+            dump(lbuf, lfill - lpos);
+            errorx("%s is longer", lpath);
+        }
 
         // Done
         if (lfill == 0 && rfill == 0) return 0;
@@ -65,7 +90,13 @@ cmp(char *lpath, char *rpath)
             pos++;
             if (rbuf[rpos] != lbuf[lpos])
             {
-                errorx("Mismatch at %d: %2.2x != %2.2x", pos, rbuf[rpos], lbuf[lpos]);
+                int count = 0;
+                while (lpos < lfill && rpos < rfill && count++ < 20)
+                {
+                    printf(" %2.2x:%2.2x", rbuf[rpos++], lbuf[lpos++]);
+                }
+                printf("\n");
+                errorx("Mismatch at %d", pos);
             };
             ++rpos;
             ++lpos;
@@ -92,5 +123,6 @@ main(int argc, char **argv)
 {
     if (argc == 2 && (0 == strncmp(argv[1], "test", 4))) exit (test());
     if (argc != 3) errx(1, "Invalid arguments");
+
     exit(cmp(argv[1], argv[2]));
 }
