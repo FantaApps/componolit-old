@@ -1,6 +1,10 @@
 #include <unistd.h>
 #include <librwall.h>
 
+// We want to use libc versions, not our own macros.
+#undef pread
+#undef pread64
+
 ssize_t
 rwall_write(int fd, const void *b, size_t c)
 {
