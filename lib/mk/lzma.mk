@@ -1,4 +1,4 @@
-ANDROID_PORT = liblzma
+ANDROID_PORT = lzma
 ANDROID_DIR = liblzma/C
 ANDROID_SECTIONS = /cc_library[@name=liblzma]
 
