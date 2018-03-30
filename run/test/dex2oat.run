@@ -7,6 +7,7 @@ set build_components {
 	drivers/timer
 	drivers/rtc
 	server/vfs
+	app/dex2oat
 	test/dex2oat
 }
 
