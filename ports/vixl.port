@@ -2,7 +2,7 @@ LICENSE   := Apache_2.0
 VERSION   := git
 DOWNLOADS := vixl.git
 
-URL(vixl) := https://android.googlesource.com/platform/external/vixl
+URL(vixl) := https://github.com/Componolit/android_external_vixl.git
 DIR(vixl) := vixl
 REV(vixl) := oreo-mr1-release
 
