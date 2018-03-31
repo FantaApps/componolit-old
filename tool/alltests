@@ -6,6 +6,7 @@ IGNORE="
 	-e run/mfe/writev_socket_short
 	-e run/mfe/sock_receive_timeout
 	-e run/mfe/difftime_subsecond
+	-e run/yoga-900
 	"
 
 BASEDIR=$(dirname $0)/../run
