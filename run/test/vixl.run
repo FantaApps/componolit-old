@@ -1,0 +1,103 @@
+#
+# Build
+#
+
+set build_components {
+	core init
+	drivers/timer
+	drivers/rtc
+	server/vfs
+	test/vixl
+}
+
+source ${genode_dir}/repos/base/run/platform_drv.inc
+append_platform_drv_build_components
+build $build_components
+create_boot_directory
+
+#
+# Generate config
+#
+
+install_config {
+<config verbose="yes">
+	<parent-provides>
+		<service name="ROM"/>
+		<service name="CAP"/>
+		<service name="RM"/>
+		<service name="PD"/>
+		<service name="CPU"/>
+		<service name="LOG"/>
+		<service name="SIGNAL"/>
+		<service name="IO_PORT"/>
+		<service name="IRQ"/>
+		<service name="IO_MEM"/>
+	</parent-provides>
+	<default-route>
+		<any-service> <parent/> <any-child/> </any-service>
+	</default-route>
+	<default caps="100"/>
+
+	<start name="timer">
+		<resource name="RAM" quantum="1M"/>
+		<provides> <service name="Timer"/> </provides>
+	</start>
+
+	<start name="rtc_drv">
+		<resource name="RAM" quantum="1M"/>
+		<provides> <service name="Rtc"/> </provides>
+	</start>
+
+	<start name="vfs">
+		<resource name="RAM" quantum="200M"/>
+		<provides> <service name="File_system"/> </provides>
+		<config>
+			<vfs>
+				<dir name="tmp"> <ram/> </dir>
+			</vfs>
+			<default-policy root="/" writeable="true" />
+		</config>
+	</start>
+
+	<start name="vixl_test" caps="1000">
+		<resource name="RAM" quantum="100M"/>
+		<config>
+            <argv progname="vixl_test">
+                <arg value="--run_all"/>
+            </argv>
+			<vfs>
+				<dir name="dev">
+					<log/>
+					<rtc/>
+					<null/>
+				</dir>
+				<fs/>
+			</vfs>
+			<libc stdout="/dev/log" stderr="/dev/log" rtc="/dev/rtc" />
+		</config>
+	</start>
+</config>}
+
+#
+# Boot image
+#
+
+# generic modules
+set boot_modules {
+	core init ld.lib.so
+	timer vfs
+	unwind.lib.so
+	cxxthreads.lib.so
+	libc.lib.so libm.lib.so posix.lib.so pthread.lib.so stdcxx.lib.so
+	lwip.lib.so
+	vixl.lib.so
+	libargv.lib.so
+	rtc_drv
+	vixl_test
+}
+
+append_platform_drv_boot_modules
+build_boot_image $boot_modules
+
+append qemu_args " -m 512 -nographic "
+run_genode_until {.*child "vixl_test" exited with exit value 0} 100
