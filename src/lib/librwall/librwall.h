@@ -8,6 +8,7 @@
 #define pread64(fd,buf,count,off) rwall_pread(fd,buf,count,off)
 #define pread(fd,buf,count,off) rwall_pread(fd,buf,count,off)
 #define lseek64(fd,off,whence) lseek(fd,off,whence)
+#define ftruncate64(fd,len) ftruncate(fd,len)
 
 #ifdef __cplusplus
 extern "C" {
