@@ -7,3 +7,5 @@ INC_DIR += $(DLMALLOC_DIR)/.git
 
 # For including "../../external/dlmalloc/malloc.c"
 INC_DIR += $(DLMALLOC_DIR)
+
+CC_OPT += -DMSPACES=1
