@@ -1,0 +1,168 @@
+#
+# Build
+#
+
+set build_components {
+	core init
+	drivers/timer
+	drivers/rtc
+	server/vfs
+	test/libart-compiler
+}
+
+source ${genode_dir}/repos/base/run/platform_drv.inc
+append_platform_drv_build_components
+build $build_components
+create_boot_directory
+
+#
+# Generate config
+#
+
+install_config {
+<config verbose="no">
+	<parent-provides>
+		<service name="ROM"/>
+		<service name="CAP"/>
+		<service name="RM"/>
+		<service name="PD"/>
+		<service name="CPU"/>
+		<service name="LOG"/>
+		<service name="SIGNAL"/>
+		<service name="IO_PORT"/>
+		<service name="IRQ"/>
+		<service name="IO_MEM"/>
+	</parent-provides>
+	<default-route>
+		<any-service> <parent/> <any-child/> </any-service>
+	</default-route>
+	<default caps="500"/>
+
+	<start name="timer">
+		<resource name="RAM" quantum="1M"/>
+		<provides> <service name="Timer"/> </provides>
+	</start>
+
+	<start name="rtc_drv">
+		<resource name="RAM" quantum="1M"/>
+		<provides> <service name="Rtc"/> </provides>
+	</start>
+
+	<start name="vfs">
+		<resource name="RAM" quantum="1000M"/>
+		<provides> <service name="File_system"/> </provides>
+		<config>
+			<vfs>
+				<dir name="tmp"> <ram/> </dir>
+				<dir name="android">
+					<dir name="framework">
+						<tar name="framework.tar"/>
+					</dir>
+				</dir>
+			</vfs>
+			<default-policy root="/" writeable="true" />
+		</config>
+	</start>
+
+	<start name="apphost_config">
+		<resource name="RAM" quantum="1M"/>
+		<binary name="report_rom"/>
+		<provides>
+			<service name="Report"/>
+			<service name="ROM"/>
+			</provides>
+		<config verbose="no">
+			<policy label="apphost -> config" report="libart-compiler_test -> init_config"/>
+			<policy label="libart-compiler_test -> init_state" report="apphost -> state"/>
+		</config>
+	</start>
+
+	<start name="apphost" caps="1000">
+		<resource name="RAM" quantum="500M"/>
+			<binary name="init"/>
+			<route>
+				<service name="ROM" label="config"> <child name="apphost_config"/> </service>
+				<service name="Report"> <child name="apphost_config"/> </service>
+				<any-service> <parent/> <any-child/> </any-service>
+			</route>
+	</start>
+
+	<start name="libart-compiler_test">
+		<resource name="RAM" quantum="1000MB"/>
+		<config ld_bind_now="no" ld_verbose="yes" >
+			<libexec ram="450MB" caps="500" verbose="no"/>
+			<argv progname="libart-compiler_test">
+				<arg value="--gtest_filter=VerifierDepsTest.UnverifiedClasses"/>
+			</argv>
+			<vfs>
+				<dir name="dev">
+					<log/>
+					<rtc/>
+					<null/>
+				</dir>
+				<fs/>
+			</vfs>
+			<libc stdout="/dev/log" stderr="/dev/log" rtc="/dev/rtc" />
+		</config>
+		<route>
+			<service name="ROM" label="init_state"> <child name="apphost_config"/> </service>
+			<service name="File_system"> <child name="vfs"/> </service>
+			<any-service> <parent/> <any-child/> </any-service>
+		</route>
+	</start>
+</config>}
+
+# Create Android framework tarball
+
+if {![info exists ::env(ANDROID_FRAMEWORK_DIR)]} {
+	puts "\nPlease set ANDROID_FRAMEWORK_DIR environment variable.\n"
+	exit 0
+}
+
+
+
+puts "\nexec tar cfv bin/framework.tar -h -C $::env(ANDROID_FRAMEWORK_DIR) *.jar\n"
+exec tar cfv bin/framework.tar -h -C $::env(ANDROID_FRAMEWORK_DIR) art-gtest-AbstractMethod.jar art-gtest-AllFields.jar art-gtest-DefaultMethods.jar art-gtest-DexToDexDecompiler.jar art-gtest-ErroneousA.jar art-gtest-ErroneousB.jar art-gtest-ErroneousInit.jar art-gtest-ExceptionHandle.jar art-gtest-ForClassLoaderA.jar art-gtest-ForClassLoaderB.jar art-gtest-ForClassLoaderC.jar art-gtest-ForClassLoaderD.jar art-gtest-GetMethodSignature.jar art-gtest-ImageLayoutA.jar art-gtest-ImageLayoutB.jar art-gtest-IMTA.jar art-gtest-IMTB.jar art-gtest-Instrumentation.jar art-gtest-Interfaces.jar art-gtest-Lookup.jar art-gtest-Main.jar art-gtest-MainStripped.jar art-gtest-ManyMethods.jar art-gtest-MethodTypes.jar art-gtest-MultiDex.jar art-gtest-MultiDexModifiedSecondary.jar art-gtest-MyClass.jar art-gtest-MyClassNatives.jar art-gtest-Nested.jar art-gtest-NonStaticLeafMethods.jar art-gtest-Packages.jar art-gtest-ProfileTestMultiDex.jar art-gtest-ProtoCompare2.jar art-gtest-ProtoCompare.jar art-gtest-StaticLeafMethods.jar art-gtest-StaticsFromCode.jar art-gtest-Statics.jar art-gtest-Transaction.jar art-gtest-VerifierDeps.jar art-gtest-VerifierDepsMulti.jar art-gtest-XandY.jar core-oj-hostdex.jar core-libart-hostdex.jar
+
+
+#
+# Boot image
+#
+
+# generic modules
+set boot_modules {
+	core init ld.lib.so
+	timer vfs
+	rtc_drv
+	libc.lib.so libm.lib.so
+	unwind.lib.so
+	cxxthreads.lib.so
+	posix.lib.so pthread.lib.so stdcxx.lib.so
+	lwip.lib.so
+	liblog.lib.so libbase.lib.so libutils.lib.so libcutils.lib.so
+	libbacktrace.lib.so icu.lib.so
+	libart.lib.so liblz4.lib.so libnativebridge.lib.so
+	libnativehelper.lib.so libnativeloader.lib.so
+	libutils.lib.so zlib.lib.so libziparchive.lib.so
+	libsigchain.lib.so
+	libsilence.lib.so
+	libz.lib.so
+	lzma.lib.so
+	liblzma.lib.so
+	libcrypto.lib.so
+	libssl.lib.so
+	vixl.lib.so
+	libart-dexlayout.lib.so
+	libart-compiler.lib.so
+	libexec.lib.so
+	libargv.lib.so
+	librwall.lib.so
+	libart-compiler_test
+	framework.tar
+}
+
+append_platform_drv_boot_modules
+build_boot_image $boot_modules
+
+append qemu_args " -m 3000 -nographic "
+run_genode_until {.*child "libart-compiler_test" exited with exit value 0} 100000
