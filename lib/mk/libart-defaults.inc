@@ -42,10 +42,6 @@ CC_OPT += -DART_STACK_OVERFLOW_GAP_mips64=16384
 CC_OPT += -DART_STACK_OVERFLOW_GAP_x86=8192
 CC_OPT += -DART_STACK_OVERFLOW_GAP_x86_64=8192
 
-# Use compiler's definition of UINT64_C/INT64_C as a fallback
-CC_OPT += -DUINT64_C=__UINT64_C
-CC_OPT += -DINT64_C=__INT64_C
-
 # Taken from build/soong/android/config.go, Mips/Mips64 would be 0x5C000000
 CC_OPT += -DART_BASE_ADDRESS=0x70000000
 
@@ -75,6 +71,9 @@ CC_OPT += -I$(call select_from_ports,libart)/art/runtime/generated
 
 # Enable UINTPTR_MAX
 CC_OPT += -D__STDC_LIMIT_MACROS=1
+
+# Enable UINT64_C/INT64_C etc. in stdint.h
+CC_OPT += -D__STDC_CONSTANT_MACROS=1
 
 LIBS += pthread
 
