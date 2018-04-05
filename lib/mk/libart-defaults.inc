@@ -81,3 +81,6 @@ LIBS += pthread
 ANDROID_MK += $(call select_from_repositories,lib/mk/libart-defaults.inc)
 
 LIBS += valgrind dlmalloc zlib icu cmdline libziparchive pthread librwall
+
+# Include path for <pthread/gettid.h>
+INC_DIR += $(call select_from_repositories,src/lib/pthread)/..
