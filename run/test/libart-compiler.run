@@ -116,10 +116,13 @@ install_config {
 
 if {![info exists ::env(ANDROID_FRAMEWORK_DIR)]} {
 	puts "\nPlease set ANDROID_FRAMEWORK_DIR environment variable.\n"
-	exit 0
+	exit 1
 }
 
-
+# if {![info exists ::env(VIXL_DEBUG)]} {
+# 	puts "\nVIXL_DEBUG environment variable must be set.\n"
+# 	exit 1
+# }
 
 puts "\nexec tar cfv bin/framework.tar -h -C $::env(ANDROID_FRAMEWORK_DIR) *.jar\n"
 exec tar cfv bin/framework.tar -h -C $::env(ANDROID_FRAMEWORK_DIR) art-gtest-AbstractMethod.jar art-gtest-AllFields.jar art-gtest-DefaultMethods.jar art-gtest-DexToDexDecompiler.jar art-gtest-ErroneousA.jar art-gtest-ErroneousB.jar art-gtest-ErroneousInit.jar art-gtest-ExceptionHandle.jar art-gtest-ForClassLoaderA.jar art-gtest-ForClassLoaderB.jar art-gtest-ForClassLoaderC.jar art-gtest-ForClassLoaderD.jar art-gtest-GetMethodSignature.jar art-gtest-ImageLayoutA.jar art-gtest-ImageLayoutB.jar art-gtest-IMTA.jar art-gtest-IMTB.jar art-gtest-Instrumentation.jar art-gtest-Interfaces.jar art-gtest-Lookup.jar art-gtest-Main.jar art-gtest-MainStripped.jar art-gtest-ManyMethods.jar art-gtest-MethodTypes.jar art-gtest-MultiDex.jar art-gtest-MultiDexModifiedSecondary.jar art-gtest-MyClass.jar art-gtest-MyClassNatives.jar art-gtest-Nested.jar art-gtest-NonStaticLeafMethods.jar art-gtest-Packages.jar art-gtest-ProfileTestMultiDex.jar art-gtest-ProtoCompare2.jar art-gtest-ProtoCompare.jar art-gtest-StaticLeafMethods.jar art-gtest-StaticsFromCode.jar art-gtest-Statics.jar art-gtest-Transaction.jar art-gtest-VerifierDeps.jar art-gtest-VerifierDepsMulti.jar art-gtest-XandY.jar core-oj-hostdex.jar core-libart-hostdex.jar
