@@ -62,6 +62,11 @@ INCLUDE_DIRS = \
 INC_DIR := $(INC_DIR) $(addprefix $(ANDROID_BASEDIR)/,$(sort $(INCLUDE_DIRS)))
 
 vpath % $(addprefix $(ANDROID_BASEDIR)/,$(ANDROID_SOURCES))
+vpath %.cc  $(addprefix $(ANDROID_PORTDIR)/,$(sort $(dir $(SRC_CC))))
+vpath %.cpp $(addprefix $(ANDROID_PORTDIR)/,$(sort $(dir $(SRC_CC))))
+vpath %.c   $(addprefix $(ANDROID_PORTDIR)/,$(sort $(dir $(SRC_C))))
+vpath %.s   $(addprefix $(ANDROID_PORTDIR)/,$(sort $(dir $(SRC_S))))
+vpath %.S   $(addprefix $(ANDROID_PORTDIR)/,$(sort $(dir $(SRC_S))))
 
 # Include these libraries by default
 LIBS += libc cxx cxxthreads stdcxx pthread
