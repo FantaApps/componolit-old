@@ -1,0 +1,101 @@
+#
+# Build
+#
+
+set build_components {
+	core init
+	drivers/timer
+	drivers/rtc
+	server/vfs
+	test/boringssl
+}
+
+source ${genode_dir}/repos/base/run/platform_drv.inc
+append_platform_drv_build_components
+build $build_components
+create_boot_directory
+
+#
+# Generate config
+#
+
+install_config {
+<config verbose="yes">
+	<parent-provides>
+		<service name="ROM"/>
+		<service name="CAP"/>
+		<service name="RM"/>
+		<service name="PD"/>
+		<service name="CPU"/>
+		<service name="LOG"/>
+		<service name="SIGNAL"/>
+		<service name="IO_PORT"/>
+		<service name="IRQ"/>
+		<service name="IO_MEM"/>
+	</parent-provides>
+	<default-route>
+		<any-service> <parent/> <any-child/> </any-service>
+	</default-route>
+	<default caps="500"/>
+
+	<start name="timer">
+		<resource name="RAM" quantum="1M"/>
+		<provides> <service name="Timer"/> </provides>
+	</start>
+
+	<start name="rtc_drv">
+		<resource name="RAM" quantum="1M"/>
+		<provides> <service name="Rtc"/> </provides>
+	</start>
+
+	<start name="vfs">
+		<resource name="RAM" quantum="128M"/>
+		<provides> <service name="File_system"/> </provides>
+		<config>
+            <vfs>
+                <ram/>
+            </vfs>
+			<default-policy root="/" writeable="true" />
+		</config>
+	</start>
+
+	<start name="boringssl_crypto_test">
+		<resource name="RAM" quantum="100M"/>
+		<config ld_bind_now="no" ld_verbose="yes">
+ 			<argv progname="art_runtime_test">
+				<arg value="--gtest_filter=-None"/>
+ 			</argv>
+			<vfs>
+				<dir name="tmp"> <fs/> </dir>
+				<dir name="dev">
+					<log/>
+					<rtc/>
+				</dir>
+			</vfs>
+			<libc stdout="/dev/log" stderr="/dev/log" rtc="/dev/rtc" />
+		</config>
+	</start>
+</config>}
+
+#
+# Boot image
+#
+
+# generic modules
+set boot_modules {
+	core init ld.lib.so
+	timer vfs
+	libc.lib.so libm.lib.so pthread.lib.so
+	cxxthreads.lib.so
+	stdcxx.lib.so
+	libargv.lib.so
+	boringssl.lib.so
+	rtc_drv
+	boringssl_crypto_test
+}
+
+append_platform_drv_boot_modules
+build_boot_image $boot_modules
+
+append qemu_args " -m 512 -nographic "
+run_genode_until {.*child "boringssl_crypto_test" exited with exit value 0} 100

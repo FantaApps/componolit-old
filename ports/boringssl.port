@@ -1,0 +1,7 @@
+LICENSE   := Apache_2.0
+VERSION   := git
+DOWNLOADS := boringssl.git
+
+URL(boringssl) := https://android.googlesource.com/platform/external/boringssl
+DIR(boringssl) := boringssl
+REV(boringssl) := oreo-mr1-release
