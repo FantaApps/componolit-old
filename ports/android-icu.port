@@ -1,0 +1,8 @@
+LICENSE   := ICU
+VERSION   := git
+DOWNLOADS := android-icu.git
+
+URL(android-icu) := https://android.googlesource.com/platform/external/icu
+DIR(android-icu) := icu
+REV(android-icu) := oreo-mr1-release
+
