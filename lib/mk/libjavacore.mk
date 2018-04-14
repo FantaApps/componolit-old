@@ -25,7 +25,6 @@ SRC_CC = \
 	libcore_icu_NativeConverter.cpp \
 	libcore_icu_TimeZoneNames.cpp \
 	libcore_io_AsynchronousCloseMonitor.cpp \
-	libcore_io_Linux.cpp \
 	libcore_io_Memory.cpp \
 	libcore_util_NativeAllocationRegistry.cpp \
 	NetworkUtilities.cpp \
@@ -35,9 +34,8 @@ SRC_CC = \
 	valueOf.cpp \
 	ZipUtilities.cpp
 
-
 CC_OPT += -D__GENODE__
-LIBS += expat icu zlib libnativehelper libssl libc stdcxx liblog libbase
+LIBS += expat libicuuc libicui18n zlib libnativehelper boringssl libc stdcxx liblog libbase
 
 include $(call select_from_repositories,lib/import/import-libjavacore.mk)
 
