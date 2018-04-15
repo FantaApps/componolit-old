@@ -93,17 +93,13 @@ set boot_modules {
 	libbacktrace.lib.so
 	libbase.lib.so
 	liblog.lib.so
-	libcrypto.lib.so
-	libcutils.lib.so
-	lwip.lib.so
 	icu.lib.so
 	libjavacore.lib.so
 	libnativehelper.lib.so
-	librwall.lib.so
-	libutils.lib.so
 	zlib.lib.so
-	libz.lib.so
-	libziparchive.lib.so
+	libicuuc.lib.so
+	libicui18n.lib.so
+	boringssl.lib.so
 	rtc_drv
 	libjavacore_test
 }

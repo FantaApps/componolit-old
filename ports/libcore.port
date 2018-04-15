@@ -2,6 +2,6 @@ LICENSE   := Apache_2.0
 VERSION   := git
 DOWNLOADS := libcore.git
 
-URL(libcore) := https://android.googlesource.com/platform/libcore
+URL(libcore) := https://github.com/Componolit/android_platform_libcore.git
 DIR(libcore) := libcore
 REV(libcore) := oreo-mr1-release
