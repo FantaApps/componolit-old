@@ -23,3 +23,8 @@ binary_$(ICU_DAT).o : $(ICU_DAT)
 	$(MSG_CONVERT)$@
 	$(VERBOSE)echo ".global $(ICU_DAT_SYMBOL_NAME); .section .rodata; .align 4; $(ICU_DAT_SYMBOL_NAME):; .incbin \"$<\"" |\
 	          $(AS) $(AS_OPT) -f -o $@ -
+
+all: install_icu_dat
+
+install_icu_dat: $(ICU_DAT)
+	install $< $(BUILD_BASE_DIR)/bin

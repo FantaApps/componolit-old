@@ -8,6 +8,7 @@ set build_components {
 	drivers/rtc
 	server/vfs
 	test/libart-compiler
+	test/libjavacore-dummy
 }
 
 source ${genode_dir}/repos/base/run/platform_drv.inc
@@ -57,6 +58,11 @@ install_config {
 				<dir name="android">
 					<dir name="framework">
 						<tar name="framework.tar"/>
+					</dir>
+					<dir name="usr">
+						<dir name="icu">
+							<rom name="icudt58l.dat"/>
+						</dir>
 					</dir>
 				</dir>
 			</vfs>
@@ -127,6 +133,7 @@ if {![info exists ::env(ANDROID_FRAMEWORK_DIR)]} {
 puts "\nexec tar cfv bin/framework.tar -h -C $::env(ANDROID_FRAMEWORK_DIR) *.jar\n"
 exec tar cfv bin/framework.tar -h -C $::env(ANDROID_FRAMEWORK_DIR) art-gtest-AbstractMethod.jar art-gtest-AllFields.jar art-gtest-DefaultMethods.jar art-gtest-DexToDexDecompiler.jar art-gtest-ErroneousA.jar art-gtest-ErroneousB.jar art-gtest-ErroneousInit.jar art-gtest-ExceptionHandle.jar art-gtest-ForClassLoaderA.jar art-gtest-ForClassLoaderB.jar art-gtest-ForClassLoaderC.jar art-gtest-ForClassLoaderD.jar art-gtest-GetMethodSignature.jar art-gtest-ImageLayoutA.jar art-gtest-ImageLayoutB.jar art-gtest-IMTA.jar art-gtest-IMTB.jar art-gtest-Instrumentation.jar art-gtest-Interfaces.jar art-gtest-Lookup.jar art-gtest-Main.jar art-gtest-MainStripped.jar art-gtest-ManyMethods.jar art-gtest-MethodTypes.jar art-gtest-MultiDex.jar art-gtest-MultiDexModifiedSecondary.jar art-gtest-MyClass.jar art-gtest-MyClassNatives.jar art-gtest-Nested.jar art-gtest-NonStaticLeafMethods.jar art-gtest-Packages.jar art-gtest-ProfileTestMultiDex.jar art-gtest-ProtoCompare2.jar art-gtest-ProtoCompare.jar art-gtest-StaticLeafMethods.jar art-gtest-StaticsFromCode.jar art-gtest-Statics.jar art-gtest-Transaction.jar art-gtest-VerifierDeps.jar art-gtest-VerifierDepsMulti.jar art-gtest-XandY.jar core-oj-hostdex.jar core-libart-hostdex.jar
 
+exec cp bin/libjavacore.lib.so bin/libjavacore.so
 
 #
 # Boot image
@@ -154,6 +161,10 @@ set boot_modules {
 	liblzma.lib.so
 	libcrypto.lib.so
 	libssl.lib.so
+	boringssl.lib.so
+	expat.lib.so
+	libicuuc.lib.so
+	libicui18n.lib.so
 	vixl.lib.so
 	libart-dexlayout.lib.so
 	libart-compiler.lib.so
@@ -162,6 +173,8 @@ set boot_modules {
 	librwall.lib.so
 	libart-compiler_test
 	framework.tar
+	libjavacore.so
+	icudt58l.dat
 }
 
 append_platform_drv_boot_modules
