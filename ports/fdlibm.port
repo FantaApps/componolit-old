@@ -1,0 +1,7 @@
+LICENSE   := BSD-like
+VERSION   := git
+DOWNLOADS := fdlibm.git
+
+URL(fdlibm) := https://android.googlesource.com/platform/external/fdlibm
+DIR(fdlibm) := fdlibm
+REV(fdlibm) := oreo-mr1-release
