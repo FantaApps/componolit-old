@@ -6,6 +6,7 @@ set build_components {
 	core init
 	drivers/timer
 	drivers/rtc
+	lib/vfs/cow
 	server/vfs
 	test/mmap_fixed
 }
@@ -53,9 +54,17 @@ install_config {
 		<provides> <service name="File_system"/> </provides>
 		<config>
             <vfs>
-                <rom name="test.dat"/>
+				<dir name="immutable">
+					<rom name="test.dat"/>
+				</dir>
+				<dir name="mutable">
+					<ram/>
+				</dir>
+				<dir name="cow">
+					<cow ro="/immutable" rw="/mutable"/>
+				</dir>
             </vfs>
-			<default-policy root="/" writeable="true" />
+			<default-policy root="/cow" writeable="true" />
 		</config>
 	</start>
 
@@ -88,6 +97,7 @@ set boot_modules {
 	libc.lib.so libm.lib.so
 	libargv.lib.so
 	zlib.lib.so
+	vfs_cow.lib.so
 	rtc_drv
 	test_mmap
     test.dat
