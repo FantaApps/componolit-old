@@ -25,6 +25,8 @@ enum
     SIZE_MULTI_PAGE_PLUS = 9000
 };
 
+static const bool genode_current = 1;
+
 const char testfile[] = "test.dat";
 
 bool test_mmap (const char *prefix, const char *test_name, int fd, int size, void *addr, bool read, bool write, bool exec, unsigned long crc)
@@ -100,6 +102,8 @@ test_all (const char *prefix, unsigned long a)
     void *addr = (void *)a;
     bool success = true;
 
+    if (addr && genode_current) return true;
+
     success &= test_mmap(prefix, "ANON/SMALL /---", -1, SIZE_SMALL, addr, false, false, false, 0);
     success &= test_mmap(prefix, "ANON/SMALL /--x", -1, SIZE_SMALL, addr, false, false, true,  0);
     success &= test_mmap(prefix, "ANON/SMALL /-w-", -1, SIZE_SMALL, addr, false, true,  false, 0);
@@ -146,49 +150,49 @@ test_all (const char *prefix, unsigned long a)
     success &= test_mmap(prefix, "ANON/MPAGE+/rwx", -1, SIZE_MULTI_PAGE_PLUS, addr, true,  true,  true,  0x128b71d4);
 
     success &= test_file(prefix, "FILE/SMALL /---", SIZE_SMALL, addr, false, false, false, 0);
-    success &= test_file(prefix, "FILE/SMALL /--x", SIZE_SMALL, addr, false, false, true,  0);
+    if (!genode_current) success &= test_file(prefix, "FILE/SMALL /--x", SIZE_SMALL, addr, false, false, true,  0);
     success &= test_file(prefix, "FILE/SMALL /-w-", SIZE_SMALL, addr, false, true,  false, 0);
-    success &= test_file(prefix, "FILE/SMALL /-wx", SIZE_SMALL, addr, false, true,  true,  0);
+    if (!genode_current) success &= test_file(prefix, "FILE/SMALL /-wx", SIZE_SMALL, addr, false, true,  true,  0);
     success &= test_file(prefix, "FILE/SMALL /r--", SIZE_SMALL, addr, true,  false, false, 0);
-    success &= test_file(prefix, "FILE/SMALL /r-x", SIZE_SMALL, addr, true,  false, true,  0);
+    if (!genode_current) success &= test_file(prefix, "FILE/SMALL /r-x", SIZE_SMALL, addr, true,  false, true,  0);
     success &= test_file(prefix, "FILE/SMALL /rw-", SIZE_SMALL, addr, true,  true,  false, 0x44cae937);
-    success &= test_file(prefix, "FILE/SMALL /rwx", SIZE_SMALL, addr, true,  true,  true,  0x44cae937);
+    if (!genode_current) success &= test_file(prefix, "FILE/SMALL /rwx", SIZE_SMALL, addr, true,  true,  true,  0x44cae937);
 
     success &= test_file(prefix, "FILE/PAGE  /---", SIZE_PAGE, addr, false, false, false, 0);
-    success &= test_file(prefix, "FILE/PAGE  /--x", SIZE_PAGE, addr, false, false, true,  0);
+    if (!genode_current) success &= test_file(prefix, "FILE/PAGE  /--x", SIZE_PAGE, addr, false, false, true,  0);
     success &= test_file(prefix, "FILE/PAGE  /-w-", SIZE_PAGE, addr, false, true,  false, 0);
-    success &= test_file(prefix, "FILE/PAGE  /-wx", SIZE_PAGE, addr, false, true,  true,  0);
+    if (!genode_current) success &= test_file(prefix, "FILE/PAGE  /-wx", SIZE_PAGE, addr, false, true,  true,  0);
     success &= test_file(prefix, "FILE/PAGE  /r--", SIZE_PAGE, addr, true,  false, false, 0);
-    success &= test_file(prefix, "FILE/PAGE  /r-x", SIZE_PAGE, addr, true,  false, true,  0);
+    if (!genode_current) success &= test_file(prefix, "FILE/PAGE  /r-x", SIZE_PAGE, addr, true,  false, true,  0);
     success &= test_file(prefix, "FILE/PAGE  /rw-", SIZE_PAGE, addr, true,  true,  false, 0x211de2e4);
-    success &= test_file(prefix, "FILE/PAGE  /rwx", SIZE_PAGE, addr, true,  true,  true,  0x211de2e4);
+    if (!genode_current) success &= test_file(prefix, "FILE/PAGE  /rwx", SIZE_PAGE, addr, true,  true,  true,  0x211de2e4);
 
     success &= test_file(prefix, "FILE/PAGE+ /---", SIZE_PAGE_PLUS, addr, false, false, false, 0);
-    success &= test_file(prefix, "FILE/PAGE+ /--x", SIZE_PAGE_PLUS, addr, false, false, true,  0);
+    if (!genode_current) success &= test_file(prefix, "FILE/PAGE+ /--x", SIZE_PAGE_PLUS, addr, false, false, true,  0);
     success &= test_file(prefix, "FILE/PAGE+ /-w-", SIZE_PAGE_PLUS, addr, false, true,  false, 0);
-    success &= test_file(prefix, "FILE/PAGE+ /-wx", SIZE_PAGE_PLUS, addr, false, true,  true,  0);
+    if (!genode_current) success &= test_file(prefix, "FILE/PAGE+ /-wx", SIZE_PAGE_PLUS, addr, false, true,  true,  0);
     success &= test_file(prefix, "FILE/PAGE+ /r--", SIZE_PAGE_PLUS, addr, true,  false, false, 0);
-    success &= test_file(prefix, "FILE/PAGE+ /r-x", SIZE_PAGE_PLUS, addr, true,  false, true,  0);
+    if (!genode_current) success &= test_file(prefix, "FILE/PAGE+ /r-x", SIZE_PAGE_PLUS, addr, true,  false, true,  0);
     success &= test_file(prefix, "FILE/PAGE+ /rw-", SIZE_PAGE_PLUS, addr, true,  true,  false, 0x49019fbe);
-    success &= test_file(prefix, "FILE/PAGE+ /rwx", SIZE_PAGE_PLUS, addr, true,  true,  true,  0x49019fbe);
+    if (!genode_current) success &= test_file(prefix, "FILE/PAGE+ /rwx", SIZE_PAGE_PLUS, addr, true,  true,  true,  0x49019fbe);
 
     success &= test_file(prefix, "FILE/MPAGE /---", SIZE_MULTI_PAGE, addr, false, false, false, 0);
-    success &= test_file(prefix, "FILE/MPAGE /--x", SIZE_MULTI_PAGE, addr, false, false, true,  0);
+    if (!genode_current) success &= test_file(prefix, "FILE/MPAGE /--x", SIZE_MULTI_PAGE, addr, false, false, true,  0);
     success &= test_file(prefix, "FILE/MPAGE /-w-", SIZE_MULTI_PAGE, addr, false, true,  false, 0);
-    success &= test_file(prefix, "FILE/MPAGE /-wx", SIZE_MULTI_PAGE, addr, false, true,  true,  0);
+    if (!genode_current) success &= test_file(prefix, "FILE/MPAGE /-wx", SIZE_MULTI_PAGE, addr, false, true,  true,  0);
     success &= test_file(prefix, "FILE/MPAGE /r--", SIZE_MULTI_PAGE, addr, true,  false, false, 0);
-    success &= test_file(prefix, "FILE/MPAGE /r-x", SIZE_MULTI_PAGE, addr, true,  false, true,  0);
+    if (!genode_current) success &= test_file(prefix, "FILE/MPAGE /r-x", SIZE_MULTI_PAGE, addr, true,  false, true,  0);
     success &= test_file(prefix, "FILE/MPAGE /rw-", SIZE_MULTI_PAGE, addr, true,  true,  false, 0x79490216);
-    success &= test_file(prefix, "FILE/MPAGE /rwx", SIZE_MULTI_PAGE, addr, true,  true,  true,  0x79490216);
+    if (!genode_current) success &= test_file(prefix, "FILE/MPAGE /rwx", SIZE_MULTI_PAGE, addr, true,  true,  true,  0x79490216);
 
     success &= test_file(prefix, "FILE/MPAGE+/---", SIZE_MULTI_PAGE_PLUS, addr, false, false, false, 0);
-    success &= test_file(prefix, "FILE/MPAGE+/--x", SIZE_MULTI_PAGE_PLUS, addr, false, false, true,  0);
+    if (!genode_current) success &= test_file(prefix, "FILE/MPAGE+/--x", SIZE_MULTI_PAGE_PLUS, addr, false, false, true,  0);
     success &= test_file(prefix, "FILE/MPAGE+/-w-", SIZE_MULTI_PAGE_PLUS, addr, false, true,  false, 0);
-    success &= test_file(prefix, "FILE/MPAGE+/-wx", SIZE_MULTI_PAGE_PLUS, addr, false, true,  true,  0);
+    if (!genode_current) success &= test_file(prefix, "FILE/MPAGE+/-wx", SIZE_MULTI_PAGE_PLUS, addr, false, true,  true,  0);
     success &= test_file(prefix, "FILE/MPAGE+/r--", SIZE_MULTI_PAGE_PLUS, addr, true,  false, false, 0);
-    success &= test_file(prefix, "FILE/MPAGE+/r-x", SIZE_MULTI_PAGE_PLUS, addr, true,  false, true,  0);
+    if (!genode_current) success &= test_file(prefix, "FILE/MPAGE+/r-x", SIZE_MULTI_PAGE_PLUS, addr, true,  false, true,  0);
     success &= test_file(prefix, "FILE/MPAGE+/rw-", SIZE_MULTI_PAGE_PLUS, addr, true,  true,  false, 0x1975681b);
-    success &= test_file(prefix, "FILE/MPAGE+/rwx", SIZE_MULTI_PAGE_PLUS, addr, true,  true,  true,  0x1975681b);
+    if (!genode_current) success &= test_file(prefix, "FILE/MPAGE+/rwx", SIZE_MULTI_PAGE_PLUS, addr, true,  true,  true,  0x1975681b);
 
     return success;
 }
