@@ -102,7 +102,7 @@ install_config {
 		<config ld_bind_now="no" ld_verbose="yes" >
 			<libexec ram="450MB" caps="500" verbose="no"/>
 			<argv progname="libart-compiler_test">
-				<arg value="--gtest_filter=-ImageTest.*:CodegenTest.ARM64ParallelMoveResolverB34760542:CodegenTest.ARM64ParallelMoveResolverSIMD:OatTest.DexFileInputCheckOutputLow4GB:OatTest.ZipFileInputCheckVerifier:ElfWriterTest.dlsym:CompilerDriverTest.AbstractMethodErrorStub:CompilerDriverProfileTest.ProfileGuidedCompilation:DwarfTest.*:SwapSpaceTest.*:OptimizingCFITest.kThumb2Adjust"/>
+				<arg value="--gtest_filter=-ImageTest.*:CodegenTest.ARM64ParallelMoveResolverB34760542:CodegenTest.ARM64ParallelMoveResolverSIMD:OatTest.DexFileInputCheckOutputLow4GB:OatTest.ZipFileInputCheckVerifier:OatTest.WriteRead:OatTest.EmptyTextSection:OatTest.DexFileInputCheckOutput:OatTest.DexFileInputCheckVerifier:ElfWriterTest.dlsym:CompilerDriverTest.AbstractMethodErrorStub:CompilerDriverProfileTest.ProfileGuidedCompilation:DwarfTest.*:SwapSpaceTest.*:OptimizingCFITest.kThumb2Adjust"/>
 			</argv>
 			<vfs>
 				<dir name="dev">
