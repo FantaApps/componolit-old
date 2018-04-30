@@ -68,7 +68,7 @@ install_config {
 		</config>
 	</start>
 
-	<start name="test_mmap">
+	<start name="test_mmap" caps="1000">
 		<resource name="RAM" quantum="32M"/>
 		<config>
             <argv progname="test_mmap">

@@ -20,17 +20,19 @@ void Libc::Component::construct(Libc::Env &env)
             {
                 failed |= true;
                 Genode::error("#", i, " mmap failed: addr=", addr);
-            } else {
-                if (ADDR && (addr != (void *)ADDR))
-                {
-                    failed |= true;
-                    Genode::error("#", i, " invalid address: expected:", (void *)ADDR, " got:", addr);
-                }
-                if (munmap(addr, SIZE) < 0)
-                {
-                    Genode::error("#", i, " munmap failed for addr ", (void *)ADDR);
-                };
+                continue;
             }
+
+            if (ADDR && (addr != (void *)ADDR))
+            {
+                failed |= true;
+                Genode::error("#", i, " invalid address: expected:", (void *)ADDR, " got:", addr);
+            }
+
+            if (munmap(addr, SIZE) < 0)
+            {
+                Genode::error("#", i, " munmap failed for addr ", (void *)ADDR);
+            };
         }
 
         exit (failed ? 1 : 0);
