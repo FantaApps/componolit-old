@@ -19,3 +19,8 @@ pthread_condattr_getclock(const void *restrict attr, void *restrict clock_id)
 {
     return EINVAL;
 }
+
+int sched_yield(void)
+{
+   return 0;
+}
