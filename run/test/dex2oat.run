@@ -91,9 +91,10 @@ install_config {
 	<start name="dex2oat_test" caps="1000">
 		<resource name="RAM" quantum="1000M"/>
 		<config>
-            <argv progname="dex2oat_test">
-                <arg value="--gtest_filter=-None"/>
-            </argv>
+			<libexec ram="450MB" caps="500" verbose="no"/>
+			<argv progname="dex2oat_test">
+				<arg value="--gtest_filter=-None"/>
+			</argv>
 			<vfs>
 				<dir name="dev">
 					<log/>
@@ -146,7 +147,14 @@ set boot_modules {
 	libexec.lib.so
 	libargv.lib.so
 	librwall.lib.so
+	libart-compiler.lib.so
+	libcrypto.lib.so
+	liblzma.lib.so
+	libssl.lib.so
+	lzma.lib.so
+	vixl.lib.so
 	rtc_drv
+	dex2oat
 	dex2oat_test
 	framework.tar
 }
