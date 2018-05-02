@@ -18,6 +18,7 @@
 
 extern Genode::Env *genode_env;
 Componolit::Libexec *_libexec = nullptr;
+extern "C" const char **environ;
 
 bool art::Exec(std::vector<std::string>& arg_vector, std::string* error_msg)
 {
@@ -33,5 +34,5 @@ bool art::Exec(std::vector<std::string>& arg_vector, std::string* error_msg)
     argv.push_back(nullptr);
 
     if (!_libexec) _libexec = new Componolit::Libexec(*genode_env);
-    return (_libexec->Exec((const char *)binary.c_str(), (const char **)&argv[0]) == 0);
+    return (_libexec->Exec((const char *)binary.c_str(), (const char **)&argv[0], environ) == 0);
 };
