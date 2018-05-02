@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
+#include <stdlib.h>
 
 int
 main (int argc, char **argv)
@@ -30,6 +31,9 @@ main (int argc, char **argv)
         printf ("write(): %s\n", strerror(errno));
         exit(3);
     }
+
+    char *var = getenv ("ENVVAR");
+    if (var) printf ("ENVVAR=%s", var);
 
     close(fd);
     exit(0);

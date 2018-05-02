@@ -1,4 +1,5 @@
 #include <libexec.h>
+#include <util/string.h>
 #include <timer_session/connection.h>
 
 using namespace Genode;
@@ -8,7 +9,7 @@ int Componolit::Libexec::_current_exec_count()
     return _exec_count++;
 }
 
-int Componolit::Libexec::Exec (const char *binary, const char *arguments[])
+int Componolit::Libexec::Exec (const char *binary, const char *arguments[], const char **environ)
 {
     typedef String<64> Name;
     bool exists = false;
@@ -81,6 +82,27 @@ int Componolit::Libexec::Exec (const char *binary, const char *arguments[])
                         xml.node("arg", [&] () { xml.attribute("value", arguments[i]); });
                     };
                 });
+    
+                if (environ) {
+                    xml.node("environ", [&] ()
+                    {
+                        for (const char **env = environ; env && *env != 0; env++)
+                        {
+                            char *key;
+                            char entry[4096];
+                            strncpy (entry, *env, sizeof (entry));
+
+                            for (key = entry; key && *key != '='; key++);
+                            if (!key) break;
+
+                            *key++ = '\0';
+                            xml.node("env", [&] () {
+                                xml.attribute("name", entry);
+                                xml.attribute("value", key);
+                            });
+                        };
+                    });
+                }
     
                 xml.node("vfs", [&] ()
                 {

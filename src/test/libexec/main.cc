@@ -25,7 +25,8 @@ struct Libexec_test::Main {
         bool fail = false;
 
         const char *arguments1[] = {"/tmp/test", "This value", 0};
-        if (_le.Exec("write", arguments1) != 0)
+        const char *environ[] = {"ENVVAR=42", 0};
+        if (_le.Exec("write", arguments1, environ) != 0)
         {
             log("Test #1 failed");
             fail = true;

@@ -5,7 +5,8 @@
 set build_components {
 	core init
 	drivers/timer
-	server/ram_fs
+	server/vfs
+	drivers/rtc
     server/rom_filter
     test/write
     test/libexec
@@ -44,10 +45,20 @@ install_config {
 		<provides> <service name="Timer"/> </provides>
 	</start>
 
-	<start name="ram_fs">
+	<start name="rtc_drv">
+		<resource name="RAM" quantum="1M"/>
+		<provides> <service name="Rtc"/> </provides>
+	</start>
+
+	<start name="vfs">
 		<resource name="RAM" quantum="128M"/>
 		<provides> <service name="File_system"/> </provides>
 		<config>
+			<vfs>
+            <dir name="tmp">
+               <ram/>
+            </dir>
+			</vfs>
 			<default-policy root="/" writeable="true" />
 		</config>
 	</start>
@@ -78,6 +89,15 @@ install_config {
 	<start name="test-libexec">
 		<resource name="RAM" quantum="4M"/>
 		<config>
+			<libexec ram="16MB" caps="500" verbose="no"/>
+			<vfs>
+				<dir name="dev">
+					<log/>
+					<null/>
+				</dir>
+				<fs/>
+			</vfs>
+			<libc stdout="/dev/log" stderr="/dev/log" />
 			<default-policy root="/" writeable="true" />
 		</config>
         <route>
@@ -97,9 +117,10 @@ set boot_modules {
     libc.lib.so
     libargv.lib.so
     libexec.lib.so
-	timer ram_fs rom_filter
+	 timer vfs rom_filter
     write
     test-libexec
+	 rtc_drv
 }
 
 append_platform_drv_boot_modules
@@ -107,3 +128,9 @@ build_boot_image $boot_modules
 
 append qemu_args " -m 512 -nographic "
 run_genode_until {.* Done.} 100
+
+grep_output {\[init \-\> apphost \-\> write\(0\)\] ENVVAR}
+
+compare_output_to {
+[init -> apphost -> write(0)] ENVVAR=42
+}

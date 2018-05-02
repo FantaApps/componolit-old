@@ -33,7 +33,7 @@ namespace Componolit {
             , _config(env, "config")
             , _init_state(env, "init_state") { };
 
-            int Exec (const char *app, const char *arguments[]);
+            int Exec (const char *app, const char *arguments[], const char **environ = nullptr);
     };
 }
 
