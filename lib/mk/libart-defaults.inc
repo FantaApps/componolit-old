@@ -12,6 +12,9 @@ ANDROID_EXCLUDE_OPT += \
 	-Wredundant-decls \
 	-Wno-frame-larger-than=
 
+# No strict warnings
+CC_CXX_WARN_STRICT =
+
 # Use sources from runtime
 ANDROID_SOURCES += runtime
 
@@ -24,6 +27,10 @@ ANDROID_INCLUDES += runtime runtime/arch
 # 	sigaction/sigaltstack/sigstack, sigvec and others
 ANDROID_EXCLUDE_OPT += \
 	-Wshadow
+
+ANDROID_EXCLUDE_OPT += \
+   -Werror \
+   -fvisibility=protected
 
 # In case we use this without including android.inc
 CC_OPT += -D__GENODE__
@@ -63,12 +70,6 @@ CC_OPT += -DMAP_32BIT=0
 # pthread_getname_np does not exist on Genode.
 CC_OPT += -D'pthread_getname_np(self,name,len)=(-1)'
 
-CC_OPT += -I$(call select_from_repositories,src/lib/libart/include)
-
-# Include path for generated asm_support_gen.h
-# We don't generate it as it comes with the sources.
-CC_OPT += -I$(call select_from_ports,libart)/art/runtime/generated
-
 # Enable UINTPTR_MAX
 CC_OPT += -D__STDC_LIMIT_MACROS=1
 
@@ -84,3 +85,10 @@ LIBS += valgrind dlmalloc zlib icu cmdline libziparchive pthread librwall
 
 # Include path for <pthread/gettid.h>
 INC_DIR += $(call select_from_repositories,src/lib/pthread)/..
+
+INC_DIR += $(call select_from_repositories,src/lib/libart/include)
+
+# Include path for generated asm_support_gen.h
+# We don't generate it as it comes with the sources.
+INC_DIR += $(call select_from_ports,libart)/art/runtime/generated
+
