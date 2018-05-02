@@ -79,6 +79,7 @@ void Libc::Component::construct(Libc::Env &env)
     Genode::Attached_rom_dataspace config { env, "config" };
     Genode::Xml_node config_xml = config.xml();
 
+    // Handle arguments
     try
     {
         Xml_node arglist = config_xml.sub_node("argv");
@@ -103,23 +104,67 @@ void Libc::Component::construct(Libc::Env &env)
         catch (Xml_node::Nonexistent_attribute)
         {
             error("No 'value' attribute in argument");
-            return;
+            exit (2);
         }
         catch (Xml_node::Nonexistent_sub_node)
         {
             error("No 'arg' present");
-            return;
+            exit (3);
         }
+
     }
     catch (Xml_node::Nonexistent_attribute)
     {
         error("No 'progname' attribute in argv");
-        return;
+        exit (4);
     }
     catch (Xml_node::Nonexistent_sub_node)
     {
         // argv is not required
         log("No argv configured");
+    }
+
+    // Handle environment
+    try
+    {
+        Xml_node arglist = config_xml.sub_node("environ");
+
+        try
+        {
+            Genode::Xml_node arg = arglist.sub_node("env");
+            for(;;)
+            {
+                char namebuf[4096];
+                char valuebuf[4096];
+
+                Xml_attribute name  = arg.attribute("name");
+                Xml_attribute value = arg.attribute("value");
+
+                name.value(namebuf, sizeof(namebuf));
+                value.value(valuebuf, sizeof(valuebuf));
+                int rv = setenv (namebuf, valuebuf, /* overwrite */ 1);
+                if (rv < 0) {
+                   log("Error adding environment variable");
+                }
+
+                if (arg.last("env")) break;
+                arg = arg.next("env");
+            }
+        }
+        catch (Xml_node::Nonexistent_attribute)
+        {
+            error("No 'name'/'value' attribute in environment element");
+            exit (5);
+        }
+        catch (Xml_node::Nonexistent_sub_node)
+        {
+            error("No 'env' present");
+            exit (6);
+        }
+    }
+    catch (Xml_node::Nonexistent_sub_node)
+    {
+        // Environment is optional
     }
 
     Libc::with_libc([&] {
