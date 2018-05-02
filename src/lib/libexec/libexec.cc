@@ -79,6 +79,7 @@ int Componolit::Libexec::Exec (const char *binary, const char *arguments[], cons
                     xml.attribute("progname", binary);
                     for (int i = 0; arguments[i]; i++)
                     {
+                        if (verbose) log("   arg[", i, "]: ", arguments[i]);
                         xml.node("arg", [&] () { xml.attribute("value", arguments[i]); });
                     };
                 });
@@ -88,6 +89,8 @@ int Componolit::Libexec::Exec (const char *binary, const char *arguments[], cons
                     {
                         for (const char **env = environ; env && *env != 0; env++)
                         {
+                            if (verbose) log("   env: ", *env);
+
                             char *key;
                             char entry[4096];
                             strncpy (entry, *env, sizeof (entry));
