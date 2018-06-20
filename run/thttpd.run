@@ -9,6 +9,7 @@ set build_components {
 	drivers/nic
 	drivers/timer
 	app/thttpd
+   lib/vfs/lxip
 }
 
 source ${genode_dir}/repos/base/run/platform_drv.inc
@@ -59,6 +60,7 @@ append config {
 					<log/>
 					<null/>
 				</dir>
+				<dir name="socket"></dir>
 				<dir name="website">
 					<tar name="testdata.tar"/>
 				</dir>
@@ -81,7 +83,8 @@ install_config $config
 append boot_modules {
 	core init timer ld.lib.so } [nic_drv_binary] {
 	libc.lib.so libm.lib.so posix.lib.so
-	lwip.lib.so zlib.lib.so
+	zlib.lib.so
+	lxip.lib.so vfs_lxip.lib.so
    testdata.tar
 	thttpd
 }

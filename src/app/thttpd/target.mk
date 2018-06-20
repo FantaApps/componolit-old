@@ -11,10 +11,10 @@ vpath %.c $(THTTPD_DIR)
 vpath %.txt $(THTTPD_DIR)
 
 INC_DIR += $(THTTPD_DIR)
-CC_OPT += -DHAVE_SELECT -DHAVE_INT64T -DHAVE_FCNTL_H -DHAVE_SOCKLENT -DHAVE_ATOLL -DHAVE_DIRENT_H -DHAVE_TM_GMTOFF
+CC_OPT += -DHAVE_SELECT -DHAVE_INT64T -DHAVE_FCNTL_H -DHAVE_SOCKLENT -DHAVE_ATOLL -DHAVE_DIRENT_H -DHAVE_TM_GMTOFF -DHAVE_DAEMON
 CC_OPT += -I$(GENDIR) -Wno-unused-variable -Wno-unused-but-set-variable
 
-LIBS += libc libm libc_lwip_nic_dhcp
+LIBS += libc libm libc_lxip libc_vfs_plugin posix
 CC_CXX_WARN_STRICT =
 
 $(GENDIR)/mime_encodings.h: $(THTTPD_DIR)/mime_encodings.txt
