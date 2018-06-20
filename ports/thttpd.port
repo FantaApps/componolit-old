@@ -1,0 +1,7 @@
+LICENSE   := BSD
+VERSION   := 2.29
+DOWNLOADS := thttpd.archive
+
+URL(thttpd) := http://www.acme.com/software/thttpd/thttpd-2.29.tar.gz
+SHA(thttpd) := 2dd4b273952b9e00c21e463481a81f3592951afa
+DIR(thttpd) := src

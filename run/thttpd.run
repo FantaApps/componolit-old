@@ -1,0 +1,104 @@
+#
+# \brief  Example for running thttpd
+# \author Alexander Senier
+# \date   2018-06-20
+#
+
+set build_components {
+	core init
+	drivers/nic
+	drivers/timer
+	app/thttpd
+}
+
+source ${genode_dir}/repos/base/run/platform_drv.inc
+append_platform_drv_build_components
+
+build $build_components
+
+create_boot_directory
+
+append config {
+<config>
+	<parent-provides>
+		<service name="ROM"/>
+		<service name="LOG"/>
+		<service name="RM"/>
+		<service name="CPU"/>
+		<service name="PD"/>
+		<service name="IRQ"/>
+		<service name="IO_PORT"/>
+		<service name="IO_MEM"/>
+	</parent-provides>
+	<default-route>
+		<any-service> <parent/> <any-child/> </any-service>
+	</default-route>
+	<default caps="100"/>
+	<start name="timer">
+		<resource name="RAM" quantum="1M"/>
+		<provides><service name="Timer"/></provides>
+	</start>}
+
+append_platform_drv_config
+
+append config {
+	<start name="nic_drv">
+		<binary name="} [nic_drv_binary] {"/>
+		<resource name="RAM" quantum="4M"/>
+		<provides><service name="Nic"/></provides>
+	</start>
+	<start name="thttpd" caps="200">
+		<resource name="RAM" quantum="1G" />
+		<config>
+         <argv progname="thttpd">
+			   <arg value="-u" />
+			   <arg value="root"/>
+         </argv>
+			<vfs>
+				<dir name="dev">
+					<log/>
+					<null/>
+				</dir>
+				<dir name="website">
+					<tar name="testdata.tar"/>
+				</dir>
+			</vfs>
+			<libc stdin="/dev/null" stdout="/dev/log" stderr="/dev/log" /> <!--ip_addr="192.168.44.10" netmask="255.255.255.0" gateway="0.0.0.0" />-->
+		</config>
+	</start>}
+
+append config {
+</config>}
+
+install_config $config
+
+
+#
+# Boot modules
+#
+
+# generic modules
+append boot_modules {
+	core init timer ld.lib.so } [nic_drv_binary] {
+	libc.lib.so libm.lib.so posix.lib.so
+	lwip.lib.so zlib.lib.so
+   testdata.tar
+	thttpd
+}
+
+# Copy test data
+exec tar cfv bin/testdata.tar -C ${genode_dir}/repos/componolit/src/test/data 1KB.dat 10KB.dat 100KB.dat 1MB.dat 10MB.dat
+
+# platform-specific modules
+append_platform_drv_boot_modules
+
+build_boot_image $boot_modules
+
+append_if [have_spec x86]     qemu_args " -net nic,model=e1000 "
+append_if [have_spec lan9118] qemu_args " -net nic,model=lan9118 "
+
+append qemu_args " -net user -redir tcp:5555::80 "
+append qemu_args " -nographic -serial mon:stdio "
+append xen_args  { sdl=0\; vif=\["model=e1000,mac=02:00:00:00:01:01,bridge=xenbr0"\] }
+
+run_genode_until forever
