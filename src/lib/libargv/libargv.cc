@@ -122,6 +122,7 @@ void Libc::Component::construct(Libc::Env &env)
     {
         // argv is not required
         log("No argv configured");
+        exit (7);
     }
 
     // Handle environment
