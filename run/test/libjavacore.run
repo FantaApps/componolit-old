@@ -85,6 +85,7 @@ install_config {
 set boot_modules {
 	core init ld.lib.so
 	timer vfs
+	vfs.lib.so
 	libc.lib.so libm.lib.so pthread.lib.so posix.lib.so
 	cxxthreads.lib.so
 	stdcxx.lib.so

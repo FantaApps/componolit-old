@@ -7,4 +7,4 @@ ANDROID_SECTIONS = /cc_test[@name=JniInvocation_test]
 include $(call select_from_repositories,lib/mk/android-prg.inc)
 
 SRC_CC += main.cc
-LIBS   += gtest
+LIBS   += gtest libargv

@@ -1,32 +1,8 @@
-/* Genode includes */
-#include <libc/component.h>
-
-/* libc includes */
 #include <stdlib.h> /* 'exit'   */
-
 #include <gtest/gtest.h>
 
-extern int          genode_argc;
-extern const char **genode_argv;
-
-/* provided by the application */
-extern "C" int main(int argc, char const **argv);
-
-void Libc::Component::construct(Libc::Env &env)
+extern "C" int main(int argc, char **argv)
 {
-	Libc::with_libc([&] {
-
-		char const *argv[] = {
-			"/bin/test_libnativehelper",
-			0
-		};
-
-		genode_argc = 1;
-		genode_argv = argv;
-
-		setprogname (genode_argv[0]);
-
-		testing::InitGoogleTest(&genode_argc, (char **)genode_argv);
+		testing::InitGoogleTest(&argc, argv);
 		exit(RUN_ALL_TESTS());
-	});
-}
+};

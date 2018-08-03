@@ -7,7 +7,7 @@ ANDROID_SECTIONS = \
 
 include $(call select_from_repositories,lib/mk/android-lib.inc)
 
-LIBS += lwip posix libc_lwip_loopback
+LIBS += lwip_legacy posix libc_lwip_loopback
 
 # For custom stdatomic.h
 CC_OPT += -I$(call select_from_repositories,include/)

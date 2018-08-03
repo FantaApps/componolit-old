@@ -3,9 +3,7 @@
 #
 
 set build_components {
-	core init
-	drivers/timer
-	drivers/rtc
+	core init drivers/timer drivers/rtc
 	lib/vfs/cow
 	server/vfs
 	test/mmap_fixed
@@ -94,13 +92,14 @@ exec cp [genode_dir]/repos/componolit/src/test/mmap_fixed/test.dat bin/
 set boot_modules {
 	core init ld.lib.so
 	timer vfs
+	vfs.lib.so
 	libc.lib.so libm.lib.so
 	libargv.lib.so
 	zlib.lib.so
 	vfs_cow.lib.so
 	rtc_drv
 	test_mmap
-    test.dat
+	test.dat
 }
 
 append_platform_drv_boot_modules

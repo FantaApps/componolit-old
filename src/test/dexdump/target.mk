@@ -18,6 +18,6 @@ $(warning SUPPRESSING WARNINGS - REMOVE FOR PRODUCTION!)
 CC_OPT += -w
 
 LIBS := $(filter-out  libart-gtest libartd libartd-disassembler libartd-compiler libgtest libicui18n libicuuc libvixld-arm libvixld-arm64,$(LIBS))
-LIBS += stdcxx gtest libart
+LIBS += stdcxx gtest libart librwall
 
 CC_CXX_WARN_STRICT =

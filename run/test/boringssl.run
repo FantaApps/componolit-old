@@ -86,6 +86,7 @@ set boot_modules {
 	core init ld.lib.so
 	timer vfs
 	libc.lib.so libm.lib.so pthread.lib.so
+	vfs.lib.so
 	cxxthreads.lib.so
 	stdcxx.lib.so
 	libargv.lib.so

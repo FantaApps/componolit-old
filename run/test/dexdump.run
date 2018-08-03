@@ -37,7 +37,7 @@ install_config {
 	<default-route>
 		<any-service> <parent/> <any-child/> </any-service>
 	</default-route>
-	<default caps="100"/>
+	<default caps="500"/>
 
 	<start name="timer">
 		<resource name="RAM" quantum="1M"/>
@@ -80,18 +80,36 @@ install_config {
         </route>
 	</start>
 
-	<start name="test-dexdump" caps="200" >
-		<resource name="RAM" quantum="10M"/>
+	<start name="test-dexdump" caps="300" >
+		<resource name="RAM" quantum="1000M"/>
 		<config>
+            <argv progname="test-dexdump">
+                <arg value="--gtest_filter=-None"/>
+            </argv>
 			<libexec ram="100M" caps="300"/>	
 			<vfs>
 				<dir name="tmp"> <fs/> </dir>
 				<dir name="dev"> <log/> <rtc/> </dir>
+				<dir name="android">
+					<dir name="framework">
+						<tar name="framework.tar"/>
+					</dir>
+				</dir>
 			</vfs>
 			<libc stdout="/dev/log" stderr="/dev/log" rtc="/dev/rtc" />
 		</config>
 	</start>
 </config>}
+
+# Create Android framework tarball
+
+if {![info exists ::env(ANDROID_FRAMEWORK_DIR)]} {
+	puts "\nPlease set ANDROID_FRAMEWORK_DIR environment variable.\n"
+	exit 0
+}
+
+puts "\nexec tar cfv bin/framework.tar -h -C $::env(ANDROID_FRAMEWORK_DIR) *.jar\n"
+exec tar cfv bin/framework.tar -h -C $::env(ANDROID_FRAMEWORK_DIR) core-oj-hostdex.jar core-libart-hostdex.jar
 
 #
 # Boot image
@@ -101,18 +119,21 @@ install_config {
 set boot_modules {
 	core init ld.lib.so
 	timer ram_fs
+	vfs.lib.so
 	cxxthreads.lib.so
 	libc.lib.so libm.lib.so posix.lib.so pthread.lib.so stdcxx.lib.so
 	liblog.lib.so libbase.lib.so
 	libargv.lib.so libexec.lib.so
 	libart.lib.so libbacktrace.lib.so
-	libcutils.lib.so lwip.lib.so liblz4.lib.so
+	libcutils.lib.so lwip_legacy.lib.so liblz4.lib.so
 	icu.lib.so libnativebridge.lib.so
 	libnativehelper.lib.so libnativeloader.lib.so
 	libsigchain.lib.so libutils.lib.so zlib.lib.so
 	libziparchive.lib.so unwind.lib.so
+	librwall.lib.so
 	rtc_drv
 	dexdump2
+	framework.tar
 	test-dexdump
 }
 

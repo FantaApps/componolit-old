@@ -36,7 +36,7 @@ install_config {
 	<default-route>
 		<any-service> <parent/> <any-child/> </any-service>
 	</default-route>
-	<default caps="100"/>
+	<default caps="200"/>
 
 	<start name="timer">
 		<resource name="RAM" quantum="1M"/>
@@ -76,7 +76,8 @@ install_config {
 set boot_modules {
 	core init ld.lib.so
 	timer ram_fs
-    cxxthreads.lib.so
+	vfs.lib.so
+	cxxthreads.lib.so
 	libc.lib.so libm.lib.so posix.lib.so pthread.lib.so stdcxx.lib.so
 	libbase.lib.so liblog.lib.so
 	rtc_drv

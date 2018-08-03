@@ -100,11 +100,12 @@ install_config {
 # generic modules
 set boot_modules {
 	core init ld.lib.so
-    libc.lib.so
-    libargv.lib.so
-    libexec.lib.so
-    timer
-    dump
+	libc.lib.so
+	vfs.lib.so
+	libargv.lib.so
+	libexec.lib.so
+	timer
+	dump
 }
 
 append_platform_drv_boot_modules

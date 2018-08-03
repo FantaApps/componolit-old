@@ -87,12 +87,13 @@ exec cp -fv [genode_dir]/repos/componolit/src/app/diff/test2.dat bin/
 set boot_modules {
 	core init ld.lib.so
 	timer vfs
-    cxxthreads.lib.so
-	libc.lib.so libm.lib.so posix.lib.so pthread.lib.so stdcxx.lib.so
-	libbase.lib.so liblog.lib.so libargv.lib.so
+	vfs.lib.so
+	cxxthreads.lib.so
+	libc.lib.so libm.lib.so pthread.lib.so stdcxx.lib.so
+	libargv.lib.so
 	rtc_drv
 	diff
-    test1.dat test1trunc.dat test2.dat
+	test1.dat test1trunc.dat test2.dat
 }
 
 append_platform_drv_boot_modules

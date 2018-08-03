@@ -59,6 +59,21 @@ install_config {
 	<start name="libcutils_test">
 		<resource name="RAM" quantum="128M"/>
 		<config>
+         <!--
+		      Disabled tests:
+
+		      TestIpv6*: IPv6 is not supported
+		      Test*ReceiveTimeout: Hangs. FIXME: Otherwise file issue based on test/mfe/sock_receive_timeout
+		      android_get_control_socket: No PF_UNIX socket implementation. We may not need it or replace the code.
+		      TestIpv4UdpLoopback: Related to [1]
+		      TestIpv4TcpLoopback: getsockopt(..SO_ERROR..) issue, FIXME: File issue based on test/mfe/getsockopt_so_error
+		      str_params.put_ENOMEM: They test for hashmapPut not being influence/not influencing errno being set to ENOMEM. However, unimplemented functions in Genodes libc set ENOMEM to 'Not implemented' inbetween. This makes the final assertion fail. We ignore this test.
+
+		      [1] https://sourceforge.net/p/genode/mailman/message/35980126/
+         -->
+         <argv progname="/bin/test_libcutils">
+            <arg value="--gtest_filter=-SocketsTest.TestIpv6*:SocketsTest.Test*ReceiveTimeout:SocketsTest.android_get_control_socket:SocketsTest.TestIpv4*Loopback:str_parms.put_ENOMEM"/>
+         </argv>
 			<vfs>
 				<dir name="tmp"> <fs/> </dir>
 				<dir name="dev">
@@ -81,9 +96,11 @@ set boot_modules {
 	core init ld.lib.so
 	timer ram_fs
 	libc.lib.so libm.lib.so
+	vfs.lib.so
 	cxxthreads.lib.so
 	posix.lib.so pthread.lib.so stdcxx.lib.so
-	lwip.lib.so
+	lwip_legacy.lib.so
+	libargv.lib.so
 	liblog.lib.so libbase.lib.so libcutils.lib.so
 	rtc_drv
 	libcutils_test

@@ -131,17 +131,17 @@ exec tar cfv bin/framework.tar -h -C $::env(ANDROID_FRAMEWORK_DIR) core-oj-hostd
 set boot_modules {
 	core init ld.lib.so
 	timer vfs
+	vfs.lib.so
 	unwind.lib.so
 	cxxthreads.lib.so
 	libc.lib.so libm.lib.so posix.lib.so pthread.lib.so stdcxx.lib.so
-	lwip.lib.so
+	lwip_legacy.lib.so
 	liblog.lib.so libbase.lib.so libutils.lib.so libcutils.lib.so
 	libbacktrace.lib.so icu.lib.so
 	libart.lib.so liblz4.lib.so libnativebridge.lib.so
 	libnativehelper.lib.so libnativeloader.lib.so
 	libutils.lib.so zlib.lib.so libziparchive.lib.so
 	libsigchain.lib.so
-	libsilence.lib.so
 	libz.lib.so
 	libart-dexlayout.lib.so
 	libexec.lib.so

@@ -36,7 +36,7 @@ install_config {
 	<default-route>
 		<any-service> <parent/> <any-child/> </any-service>
 	</default-route>
-	<default caps="100"/>
+	<default caps="200"/>
 
 	<start name="timer">
 		<resource name="RAM" quantum="1M"/>
@@ -59,6 +59,9 @@ install_config {
 	<start name="libnativehelper_test">
 		<resource name="RAM" quantum="128M"/>
 		<config>
+			<argv progname="test">
+				<arg value="/bin/test"/>
+			</argv>
 			<vfs>
 				<dir name="tmp"> <fs/> </dir>
 				<dir name="dev"> <log/> <rtc/> </dir>
@@ -76,6 +79,8 @@ install_config {
 set boot_modules {
 	core init ld.lib.so
 	timer ram_fs
+	vfs.lib.so
+ 	libargv.lib.so
 	cxxthreads.lib.so
 	libc.lib.so libm.lib.so posix.lib.so pthread.lib.so stdcxx.lib.so
 	liblog.lib.so libnativehelper.lib.so

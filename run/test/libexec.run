@@ -70,7 +70,7 @@ install_config {
             <service name="Report"/>
             <service name="ROM"/>
         </provides>
-        <config verbose="no">
+        <config verbose="yes">
             <policy label="apphost -> config" report="test-libexec -> init_config"/>
             <policy label="test-libexec -> init_state" report="apphost -> state"/>
         </config>
@@ -89,7 +89,7 @@ install_config {
 	<start name="test-libexec">
 		<resource name="RAM" quantum="4M"/>
 		<config>
-			<libexec ram="16MB" caps="500" verbose="no"/>
+			<libexec ram="16MB" caps="500" verbose="yes"/>
 			<vfs>
 				<dir name="dev">
 					<log/>
@@ -114,13 +114,14 @@ install_config {
 # generic modules
 set boot_modules {
 	core init ld.lib.so
-    libc.lib.so
-    libargv.lib.so
-    libexec.lib.so
-	 timer vfs rom_filter
-    write
-    test-libexec
-	 rtc_drv
+	libc.lib.so
+	vfs.lib.so
+	libargv.lib.so
+	libexec.lib.so
+	timer vfs rom_filter
+	write
+	test-libexec
+	rtc_drv
 }
 
 append_platform_drv_boot_modules

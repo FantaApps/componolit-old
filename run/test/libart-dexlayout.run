@@ -140,10 +140,11 @@ set boot_modules {
 	timer vfs
 	rtc_drv
 	libc.lib.so libm.lib.so
+	vfs.lib.so
 	unwind.lib.so
 	cxxthreads.lib.so
 	posix.lib.so pthread.lib.so stdcxx.lib.so
-	lwip.lib.so
+	lwip_legacy.lib.so
 	liblog.lib.so libbase.lib.so libutils.lib.so libcutils.lib.so
 	libbacktrace.lib.so icu.lib.so
 	libart.lib.so liblz4.lib.so libnativebridge.lib.so

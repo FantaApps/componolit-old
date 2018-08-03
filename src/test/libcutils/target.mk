@@ -7,6 +7,6 @@ ANDROID_EXCLUDE_CC = PropertiesTest.cpp AshmemTest.cpp sched_policy_test.cpp tra
 
 include $(call select_from_repositories,lib/mk/android-prg.inc)
 
-CC_OPT = -Wall -DINT16_MAX=0xffff
+CC_OPT = -Wall -DINT16_MAX=0xffff -fpermissive
 SRC_CC += main.cc
-LIBS   += gtest
+LIBS   += libargv gtest

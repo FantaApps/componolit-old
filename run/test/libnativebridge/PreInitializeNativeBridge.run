@@ -8,6 +8,9 @@ append config {
 	<start name="test_PreInitializeNativeBridge">
 		<resource name="RAM" quantum="4M"/>
 		<config>
+			<argv progname="test">
+				<arg value="/bin/test"/>
+			</argv>
 			<vfs>
 				<dir name="tmp"> <fs/> </dir>
 				<dir name="dev"> <log/> <rtc/> </dir>
