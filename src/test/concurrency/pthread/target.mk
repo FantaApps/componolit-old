@@ -4,7 +4,7 @@ SRC_CC = main.cc \
     src/tst-rwlock5.c \
     src/tst-rwlock13.c \
 
-LIBS = posix pthread
+LIBS = libc pthread
 
 # To include missing <error.h> used in multiple tests
 CC_OPT += -I$(REP_DIR)/src/test/concurrency/pthread/src

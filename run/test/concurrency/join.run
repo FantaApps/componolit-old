@@ -43,6 +43,7 @@ install_config {
 build_boot_image {
     core ld.lib.so init cxxthreads.lib.so
     libc.lib.so libm.lib.so stdcxx.lib.so
+    vfs.lib.so
     timer test-concurrency-join
 }
 
