@@ -79,7 +79,7 @@ install_config {
 	</start>
 
 	<start name="apphost" caps="1000">
-		<resource name="RAM" quantum="500M"/>
+		<resource name="RAM" quantum="800M"/>
 			<binary name="init"/>
 			<route>
 				<service name="ROM" label="config"> <child name="apphost_config"/> </service>
@@ -91,7 +91,7 @@ install_config {
 	<start name="dex2oat_test" caps="1000">
 		<resource name="RAM" quantum="1000M"/>
 		<config>
-			<libexec ram="450MB" caps="500" verbose="no"/>
+			<libexec ram="750MB" caps="500" verbose="no"/>
 			<argv progname="dex2oat_test">
 				<arg value="--gtest_filter=-None"/>
 			</argv>
