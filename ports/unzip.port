@@ -3,5 +3,5 @@ VERSION   := 60
 DOWNLOADS := unzip.archive
 
 URL(unzip) := https://downloads.sourceforge.net/infozip/unzip60.tar.gz
-SHA(unzip) := abf7de8a4018a983590ed6f5cbd990d4740f8a22
+SHA(unzip) := 036d96991646d0449ed0aa952e4fbe21b476ce994abc276e49d30e686708bd37
 DIR(unzip) := unzip
