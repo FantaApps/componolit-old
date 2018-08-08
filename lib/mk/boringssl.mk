@@ -8,4 +8,5 @@ ANDROID_SECTIONS += /cc_library[@name=libcrypto]/target/android_$(ANDROID_ARCH)
 include $(call select_from_repositories,lib/import/import-boringssl.inc)
 include $(call select_from_repositories,lib/mk/android-lib.inc)
 
+CC_OPT += -DOPENSSL_NO_THREADS
 LIBS += pthread

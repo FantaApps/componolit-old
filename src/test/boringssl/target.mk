@@ -13,6 +13,6 @@ SRC_CC += \
 	src/crypto/test/malloc.cc \
 	src/crypto/test/test_util.cc
 
-LIBS += boringssl gtest
+LIBS += boringssl gtest libc
 
 include $(call select_from_repositories,lib/mk/android-prg.inc)
