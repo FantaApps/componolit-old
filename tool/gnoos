@@ -1029,27 +1029,22 @@ if __name__ == "__main__":
         PARSER.print_help()
         sys.exit(1)
 
-    if not ARGS.output:
-        print("No --output file set")
-        PARSER.print_help()
-        sys.exit(1)
-
-    if len(ARGS.queries) == 0:
-        print("No query")
-        PARSER.print_help()
-        sys.exit(1)
-
     SOONG_PARSER = Soong(ARGS.basedir)
     for soong_file in ARGS.input:
         SOONG_PARSER.parse(soong_file)
 
     SOONG_PARSER.resolve_defaults()
 
-    try:
-        QUERY_TEXT = "|".join(ARGS.queries)
-        QUERY_RESULT = SOONG_PARSER.query(QUERY_TEXT)
-        with open(ARGS.output, 'w') as outfile:
-            outfile.write(make_vars(QUERY_RESULT, ARGS.prefix))
-    except Exception as exception:
-        print('$(error ERROR EXECUTING GNOOS: ' + str(exception) + ')')
-        raise
+    if len(ARGS.queries) != 0:
+        if not ARGS.output:
+            print("No --output file set")
+            PARSER.print_help()
+            sys.exit(1)
+        try:
+            QUERY_TEXT = "|".join(ARGS.queries)
+            QUERY_RESULT = SOONG_PARSER.query(QUERY_TEXT)
+            with open(ARGS.output, 'w') as outfile:
+                outfile.write(make_vars(QUERY_RESULT, ARGS.prefix))
+        except Exception as exception:
+            print('$(error ERROR EXECUTING GNOOS: ' + str(exception) + ')')
+            raise
