@@ -7,6 +7,8 @@ import sys
 import copy
 import argparse
 import unittest
+import glob
+import filecmp
 
 from pyparsing import \
     Word, Suppress, Literal, alphanums, Optional, delimitedList, Group, OneOrMore, StringEnd, \
@@ -253,10 +255,22 @@ class Soong:
     def soong_action(self, tokens):
         self.__data['sections'].extend(tokens)
 
-    def parse(self, infile):
-        filepath = self.__basedir + "/" + infile
+    def parseRecursive(self):
+         for x in os.walk(self.__basedir):
+            for y in glob.glob(os.path.join(x[0], '*.bp')):
+                baseName = os.path.basename(y)
+                specDir = os.path.dirname(os.path.realpath(y))
+                SOONG_PARSER.parse(baseName, specDir)
+
+    def parse(self, infile, specDir=None):
+        filePath = ""
+        if specDir is None:
+            filepath = self.__basedir + "/" + infile
+        else:
+            filepath = specDir + "/" + infile
         with open(filepath, 'r') as filehandle:
             try:
+                print("parse " + filepath)
                 self._grammar.parseFile(filehandle)
             except ParseException as e:
                 raise ParseError("Parse error in '" + infile + "' [" + str(e) + "]")
@@ -1024,14 +1038,13 @@ if __name__ == "__main__":
         PARSER.print_help()
         sys.exit(1)
 
-    if not ARGS.input:
-        print("No --input file set")
-        PARSER.print_help()
-        sys.exit(1)
-
     SOONG_PARSER = Soong(ARGS.basedir)
-    for soong_file in ARGS.input:
-        SOONG_PARSER.parse(soong_file)
+    # If no files specified, recursively iterate all Android.bp files
+    if not ARGS.input:
+        SOONG_PARSER.parseRecursive()
+    else:
+        for soong_file in ARGS.input:
+            SOONG_PARSER.parse(soong_file)
 
     SOONG_PARSER.resolve_defaults()
 
