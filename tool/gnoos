@@ -262,6 +262,19 @@ class Soong:
                 specDir = os.path.dirname(os.path.realpath(y))
                 SOONG_PARSER.parse(baseName, specDir)
 
+    def visualizeCallGraph(self):
+        print("digraph {")
+        for sec in self.__data['sections']:
+            if sec[0].find("cc_library") != -1 or sec[0].find("cc_binary"):
+                fromName = sec[1]['name'].replace('-', '_').replace('.', '_').replace('@', 'at').replace('+', '_')
+                if 'shared_libs' in sec[1]:
+                    for libTO in sec[1]['shared_libs']:
+                        print(fromName + " -> " + libTO.replace('-', '_').replace('.', '_').replace('@', 'at').replace('+', '_') + ";")
+                if 'static_libs' in sec[1]:
+                    for libTO in sec[1]['static_libs']:
+                        print(fromName + " -> " + libTO.replace('-', '_').replace('.', '_').replace('@', 'at').replace('+', '_') + ";")
+        print("}")
+
     def parse(self, infile, specDir=None):
         filePath = ""
         if specDir is None:
@@ -270,7 +283,6 @@ class Soong:
             filepath = specDir + "/" + infile
         with open(filepath, 'r') as filehandle:
             try:
-                print("parse " + filepath)
                 self._grammar.parseFile(filehandle)
             except ParseException as e:
                 raise ParseError("Parse error in '" + infile + "' [" + str(e) + "]")
