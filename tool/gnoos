@@ -256,7 +256,7 @@ class Soong:
         self.__data['sections'].extend(tokens)
 
     def parseRecursive(self):
-         for x in os.walk(self.__basedir):
+        for x in os.walk(self.__basedir):
             for y in glob.glob(os.path.join(x[0], '*.bp')):
                 baseName = os.path.basename(y)
                 specDir = os.path.dirname(os.path.realpath(y))
@@ -1038,7 +1038,7 @@ if __name__ == "__main__":
         PARSER.print_help()
         sys.exit(1)
 
-    SOONG_PARSER = Soong(ARGS.basedir)
+    SOONG_PARSER = Soong(ARGS.basedir,ignore_vars=['subdirs', 'build', 'common_CFLAGS', 'common_cflags'])
     # If no files specified, recursively iterate all Android.bp files
     if not ARGS.input:
         SOONG_PARSER.parseRecursive()
