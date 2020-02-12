@@ -9,6 +9,13 @@ import argparse
 import unittest
 import glob
 import filecmp
+from pagerank import powerIteration
+import collections
+
+import numpy as np
+from scipy import sparse
+from fast_pagerank import pagerank
+from fast_pagerank import pagerank_power
 
 from pyparsing import \
     Word, Suppress, Literal, alphanums, Optional, delimitedList, Group, OneOrMore, StringEnd, \
@@ -103,7 +110,7 @@ class SoongQuery:
 
     def __init__(self, querytext):
 
-        qname = Word(alphanums + "_-@.+")
+        qname = Word(alphanums + " _-@.+")
 
         attribute = Suppress(Literal('[') + Literal('@')) + qname + \
                     Suppress(Literal('=')) + qname + Suppress(Literal(']'))
@@ -206,9 +213,9 @@ class Soong:
 
         # Section (unnamed)
         # pylint: disable=expression-not-assigned
-        section << Suppress(Literal("{")) + \
+        section << (Suppress(Literal("{")) | Suppress(Literal("("))) + \
             Optional(delimitedList(dictelem)) + \
-            Suppress(Optional(comma) + Literal("}"))
+            Suppress(Optional(comma) + (Literal("}") | Literal(")")))
         section.setParseAction(section_action)
         # pylint: enable=expression-not-assigned
 
@@ -261,6 +268,8 @@ class Soong:
                 baseName = os.path.basename(y)
                 specDir = os.path.dirname(os.path.realpath(y))
                 SOONG_PARSER.parse(baseName, specDir)
+        print(self.__data)
+        self.pageRankCallGraph()
 
     def visualizeCallGraph(self):
         print("digraph {")
@@ -275,17 +284,63 @@ class Soong:
                         print(fromName + " -> " + libTO.replace('-', '_').replace('.', '_').replace('@', 'at').replace('+', '_') + ";")
         print("}")
 
+    def pageRankCallGraph(self):
+        rows, cols, vals = [], [], []
+        dic_graph = {}
+        for sec in self.__data['sections']:
+            if (sec[0].find("cc_library") != -1 or sec[0].find("cc_binary") != -1) and 'name' in sec[1]:
+                fromName = sec[1]['name']
+                if 'shared_libs' in sec[1]:
+                    dic_graph[fromName] = []
+                    for libTO in sec[1]['shared_libs']:
+                        tup = (libTO, 1)
+                        dic_graph[fromName].append(tup)
+                elif 'static_libs' in sec[1]:
+                    dic_graph[fromName] = []
+                    for libTO in sec[1]['static_libs']:
+                        tup = (libTO, 1)
+                        dic_graph[fromName].append(tup)
+                else:
+                    dic_graph[fromName] = []
+        keys = dic_graph.keys()
+        map_dict = dict(zip(list(keys), range(len(keys))))
+        for key, values in dic_graph.items():
+            for value in values:
+                rows.append(map_dict[key])
+                if value[0] in map_dict:
+                    cols.append(map_dict[value[0]])
+                else:
+                    map_dict[value[0]] = len(map_dict)
+                    cols.append(map_dict[value[0]])
+                vals.append(value[1])
+        G = sparse.csr_matrix((vals, (rows, cols)), shape=(len(map_dict), len(map_dict)))
+        pr=pagerank(G, p=0.85)
+        scores = {}
+        for i in range(len(pr)):
+            rank = pr[i]
+            for key in map_dict:
+                if map_dict[key] == i:
+                    scores[key] = rank
+        scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+        print(scores)
+
     def parse(self, infile, specDir=None):
         filePath = ""
         if specDir is None:
             filepath = self.__basedir + "/" + infile
         else:
             filepath = specDir + "/" + infile
-        with open(filepath, 'r') as filehandle:
-            try:
-                self._grammar.parseFile(filehandle)
-            except ParseException as e:
-                raise ParseError("Parse error in '" + infile + "' [" + str(e) + "]")
+        try:
+            with open(filepath, 'r') as filehandle:
+                try:
+                    self._grammar.parseFile(filehandle)
+                except ParseException as e:
+                    raise ParseError("Parse error in '" + infile + "' [" + str(e) + "]")
+                except MissingVariable as e:
+                    print("missing variable", filepath)
+        except Exception as e:
+            print(e)
+            pass # some times there is no file
 
     def data(self):
         return self.__data['sections']
@@ -1050,7 +1105,10 @@ if __name__ == "__main__":
         PARSER.print_help()
         sys.exit(1)
 
-    SOONG_PARSER = Soong(ARGS.basedir,ignore_vars=['subdirs', 'build', 'common_CFLAGS', 'common_cflags'])
+    SOONG_PARSER = Soong(ARGS.basedir,ignore_vars=['subdirs', 'build', 'common_CFLAGS', 'common_cflags', \
+                                                   'google3_clang_tidy_flags', 'google3_clang_tidy_errors', 'integration_tests', \
+                                                   'common_c_local_includes','android_common_cflags', 'android_product_variables', \
+                                                   'lib_src_files', 'unit_tests'])
     # If no files specified, recursively iterate all Android.bp files
     if not ARGS.input:
         SOONG_PARSER.parseRecursive()
