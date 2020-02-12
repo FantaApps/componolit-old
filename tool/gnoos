@@ -250,7 +250,8 @@ class Soong:
     def varref_action(self, tokens):
         varname = tokens[0]
         if not varname in self.variables():
-            raise MissingVariable(varname)
+            #raise MissingVariable(varname)
+            self.variables()[varname] = []
         return [self.variables()[varname]]
 
     def extension_action(self, tokens):
@@ -268,7 +269,6 @@ class Soong:
                 baseName = os.path.basename(y)
                 specDir = os.path.dirname(os.path.realpath(y))
                 SOONG_PARSER.parse(baseName, specDir)
-        print(self.__data)
         self.pageRankCallGraph()
 
     def visualizeCallGraph(self):
@@ -322,7 +322,8 @@ class Soong:
                 if map_dict[key] == i:
                     scores[key] = rank
         scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-        print(scores)
+        for score in scores:
+            print(score)
 
     def parse(self, infile, specDir=None):
         filePath = ""
@@ -339,7 +340,6 @@ class Soong:
                 except MissingVariable as e:
                     print("missing variable", filepath)
         except Exception as e:
-            print(e)
             pass # some times there is no file
 
     def data(self):
@@ -1105,10 +1105,14 @@ if __name__ == "__main__":
         PARSER.print_help()
         sys.exit(1)
 
-    SOONG_PARSER = Soong(ARGS.basedir,ignore_vars=['subdirs', 'build', 'common_CFLAGS', 'common_cflags', \
+    SOONG_PARSER = Soong(ARGS.basedir,ignore_vars=['subdirs', 'build', 'common_CFLAGS', 'common_cflags', 'gchips_clang_tidy_errors',\
                                                    'google3_clang_tidy_flags', 'google3_clang_tidy_errors', 'integration_tests', \
                                                    'common_c_local_includes','android_common_cflags', 'android_product_variables', \
-                                                   'lib_src_files', 'unit_tests'])
+                                                   'lib_src_files', 'unit_tests', 'gchips_clang_tidy_disabled', 'shared_libs', \
+                                                   'optional_subdirs', 'tidy_errors', 'BUILD_FLAGS', 'sourceFiles', 'sharedLibraries', \
+                                                   'res_dirs', 'qc2_sources', 'version_name', 'includeFiles', 'localIncludeFiles', \
+                                                   'headerLibraries', 'staticLibraries', 'header_libraries', 'qc2_deps_include', \
+                                                   'version_code', 'qc2_deps_shared', 'static_libs', 'priv_apps', 'module_libs'])
     # If no files specified, recursively iterate all Android.bp files
     if not ARGS.input:
         SOONG_PARSER.parseRecursive()
