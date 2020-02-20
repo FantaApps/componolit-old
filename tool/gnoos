@@ -21,6 +21,8 @@ from pyparsing import \
     Word, Suppress, Literal, alphanums, Optional, delimitedList, Group, OneOrMore, StringEnd, \
     QuotedString, Forward, ZeroOrMore, cppStyleComment, cStyleComment, ParseException
 
+np.set_printoptions(threshold=sys.maxsize)
+
 class MissingVariable(Exception):
     pass
 
@@ -167,11 +169,12 @@ def namedsection_action(tokens):
 #
 class Soong:
 
-    def __init__(self, basedir='.', ignore_vars=None):
+    def __init__(self, basedir='.', ignore_vars=None, priviledged_apps_file=None):
         # pylint: disable=too-many-locals
         self.__data = {'variables': {}, 'sections': []}
         self.__basedir = basedir
         self.__ignore_vars = ignore_vars
+        self.read_priv_list_files(priviledged_apps_file)
 
         name = Word(alphanums + "_")
         comma = Literal(',')
@@ -240,6 +243,15 @@ class Soong:
         # C and C++ style comments
         self._grammar.ignore(cppStyleComment | cStyleComment)
 
+    # separated by line
+    def read_priv_list_files(self, priv_list_file):
+        self.__priv_app_list = []
+        if priv_list_file != None:
+            reader = open(priv_list_file)
+            lines = reader.readlines()
+            for line in lines:
+                self.__priv_app_list.append(line.strip())
+
     def variable_action(self, tokens):
         var = tokens[0]
         if var in self.variables() and not (self.__ignore_vars and var in self.__ignore_vars):
@@ -287,15 +299,18 @@ class Soong:
     def pageRankCallGraph(self):
         rows, cols, vals = [], [], []
         dic_graph = {}
+        cc_bin = []
         for sec in self.__data['sections']:
             if (sec[0].find("cc_library") != -1 or sec[0].find("cc_binary") != -1) and 'name' in sec[1]:
                 fromName = sec[1]['name']
+                if sec[0].find("cc_binary") != -1 and fromName not in cc_bin:
+                    cc_bin.append(fromName)
                 if 'shared_libs' in sec[1]:
                     dic_graph[fromName] = []
                     for libTO in sec[1]['shared_libs']:
                         tup = (libTO, 1)
                         dic_graph[fromName].append(tup)
-                elif 'static_libs' in sec[1]:
+                if 'static_libs' in sec[1]:
                     dic_graph[fromName] = []
                     for libTO in sec[1]['static_libs']:
                         tup = (libTO, 1)
@@ -314,7 +329,13 @@ class Soong:
                     cols.append(map_dict[value[0]])
                 vals.append(value[1])
         G = sparse.csr_matrix((vals, (rows, cols)), shape=(len(map_dict), len(map_dict)))
-        pr=pagerank(G, p=0.85)
+        per = np.random.randint(100, size=len(map_dict))
+        for key in map_dict:
+            if self.check_if_in_priv_dic(key) and key in cc_bin:
+                per[map_dict[key]] = 10
+            else:
+                per[map_dict[key]] = 1
+        pr=pagerank(G, p=0.85, personalize=per)
         scores = {}
         for i in range(len(pr)):
             rank = pr[i]
@@ -324,6 +345,12 @@ class Soong:
         scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
         for score in scores:
             print(score)
+
+    def check_if_in_priv_dic(self, fromName):
+        for f in self.__priv_app_list:
+            if f in fromName:
+                return True
+        return False
 
     def parse(self, infile, specDir=None):
         filePath = ""
@@ -1066,6 +1093,7 @@ if __name__ == "__main__":
     PARSER = argparse.ArgumentParser(description='Translate soong files to make statements')
     PARSER.add_argument('-v', '--verbose', help='Verbose output', action='store_true')
     PARSER.add_argument('-b', '--basedir', help='Base directory', action='store')
+    PARSER.add_argument('-l', '--privapp', help='privileged apps', action='store')
     PARSER.add_argument('-i', '--input', help='Input file to load', action='append')
     PARSER.add_argument('-o', '--output', help='Output file', action='store')
     PARSER.add_argument('-p', '--prefix', help='Prepend prefix to variables',
@@ -1112,7 +1140,8 @@ if __name__ == "__main__":
                                                    'optional_subdirs', 'tidy_errors', 'BUILD_FLAGS', 'sourceFiles', 'sharedLibraries', \
                                                    'res_dirs', 'qc2_sources', 'version_name', 'includeFiles', 'localIncludeFiles', \
                                                    'headerLibraries', 'staticLibraries', 'header_libraries', 'qc2_deps_include', \
-                                                   'version_code', 'qc2_deps_shared', 'static_libs', 'priv_apps', 'module_libs'])
+                                                   'version_code', 'qc2_deps_shared', 'static_libs', 'priv_apps', 'module_libs'], \
+                                                   priviledged_apps_file=ARGS.privapp)
     # If no files specified, recursively iterate all Android.bp files
     if not ARGS.input:
         SOONG_PARSER.parseRecursive()
