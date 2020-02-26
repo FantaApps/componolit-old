@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+# pylint: disable=missing-docstring
+# pylint: disable=too-few-public-methods
+
+import os
+import sys
+import copy
+import argparse
+import unittest
+import glob
+import filecmp
+from pagerank import powerIteration
+import collections
+import operator
+
+import numpy as np
+from scipy import sparse
+from fast_pagerank import pagerank
+from fast_pagerank import pagerank_power
+
+from pyparsing import \
+    Word, Suppress, Literal, alphanums, Optional, delimitedList, Group, OneOrMore, StringEnd, \
+    QuotedString, Forward, ZeroOrMore, cppStyleComment, cStyleComment, ParseException, Combine, \
+    alphas, White, LineEnd
+
+class AndroidServiceRank:
+    def __init__(self):
+        self.__data = {}
+
+    def parseRecursive(self, baseDir):
+        for x in os.walk(baseDir):
+            for y in glob.glob(os.path.join(x[0], '*.rc')):
+                baseName = os.path.basename(y)
+                specDir = os.path.dirname(os.path.realpath(y))
+                INIT_PARSER.parseFile(specDir+'/'+baseName)
+
+
+    def calculateServiceScore(self):
+        scoreBoard = {}
+        for item in self.__data:
+            data = self.__data[item]
+            if 'disabled' not in data:
+                score = 0
+                if 'user' in data:
+                    if 'root' in data['user']:
+                        score += 5
+                    elif 'system' in data['user']:
+                        score += 4
+                    else:
+                        score += 1
+                if 'group' in data:
+                    if 'root' in data['group']:
+                        score += 5
+                    elif 'system' in data['group']:
+                        score += 4
+                    else:
+                        score += 1
+                scoreBoard[data['file']] = score
+        sortedBoard = sorted(scoreBoard.items(), key=operator.itemgetter(1), reverse = True)
+        for key in sortedBoard:
+            print(key[0], key[1])
+
+    def parseFile(self, filePath):
+        try:
+            with open(filePath, 'r') as filehandle:
+                try:
+                    lines = filehandle.readlines()
+                    switch = False
+                    name = ''
+                    for  line in lines:
+                        items = line.strip().split(' ')
+                        if line.startswith('service'):
+                            data = {}
+                            name = items[1]
+                            val = items[2]
+                            self.__data[name] = {'file' : val}
+                            switch = True
+                        elif line.startswith('on'):
+                            switch = False
+                        elif len(items) > 0 and items[0] != '#' and name != '':
+                            flatten = ' '.join(items[1:])
+                            self.__data[name][items[0]] = flatten
+
+                except ParseException as e:
+                    raise ParseError("Parse error in '" + infile + "' [" + str(e) + "]")
+        except Exception as e:
+            print(e)
+            pass # some times there is no file
+
+
+if __name__ == "__main__":
+
+    PARSER = argparse.ArgumentParser(description='Translate soong files to make statements')
+    PARSER.add_argument('-v', '--verbose', help='Verbose output', action='store_true')
+    PARSER.add_argument('-b', '--basedir', help='Base directory', action='store')
+    ARGS = PARSER.parse_args()
+
+    if not ARGS.basedir:
+        print("No --basedir directory set")
+        PARSER.print_help()
+        sys.exit(1)
+
+    INIT_PARSER = AndroidServiceRank()
+    INIT_PARSER.parseRecursive(ARGS.basedir)
+    INIT_PARSER.calculateServiceScore()
