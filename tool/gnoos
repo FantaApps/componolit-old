@@ -286,29 +286,24 @@ class Soong:
                 specDir = os.path.dirname(os.path.realpath(y))
                 SOONG_PARSER.parse(baseName, specDir)
         self.pageRankCallGraph()
+        self.visualizeCallGraph()
 
     def visualizeCallGraph(self):
         print("digraph {")
-        for sec in self.__data['sections']:
-            if sec[0].find("cc_library") != -1 or sec[0].find("cc_binary"):
-                fromName = sec[1]['name'].replace('-', '_').replace('.', '_').replace('@', 'at').replace('+', '_')
-                if 'shared_libs' in sec[1]:
-                    for libTO in sec[1]['shared_libs']:
-                        print(fromName + " -> " + libTO.replace('-', '_').replace('.', '_').replace('@', 'at').replace('+', '_') + ";")
-                if 'static_libs' in sec[1]:
-                    for libTO in sec[1]['static_libs']:
-                        print(fromName + " -> " + libTO.replace('-', '_').replace('.', '_').replace('@', 'at').replace('+', '_') + ";")
+        for fromV in self.__conn_graph:
+            fromName = fromV.replace('-', '_').replace('.', '_').replace('@', 'at').replace('+', '_')
+            for toV in self.__conn_graph[fromV]:
+                toName = toV.replace('-', '_').replace('.', '_').replace('@', 'at').replace('+', '_')
+                print(fromName + " -> " + toName + ";")
         print("}")
 
-    def pageRankCallGraph(self):
-        rows, cols, vals = [], [], []
+    def constructGraph(self):
         self.__dic_graph = {}
         self.__cc_bin = []
         for sec in self.__data['sections']:
+            # binary first
             if (sec[0].find("cc_library") != -1 or sec[0].find("cc_binary") != -1) and 'name' in sec[1]:
                 fromName = sec[1]['name']
-                if sec[0].find("cc_binary") != -1 and not self.check_if_in_priv_dic(fromName):
-                    continue
                 if sec[0].find("cc_binary") != -1 and fromName not in self.__cc_bin:
                     self.__cc_bin.append(fromName)
                 self.__dic_graph[fromName] = []
@@ -327,21 +322,52 @@ class Soong:
                         tup = (libTO, 1)
                         self.__dic_graph[fromName].append(tup)
                         #print(fromName, tup)
+        self.build_rev_dict_graph()
 
-        keys = self.__dic_graph.keys()
+    def constructConnectedGraph(self):
+        self.__conn_graph = {}
+        self.__rev_conn_graph = {}
+        for fromV in self.__priv_app_list:
+            self.growConnectedGraph(fromV)
+        #print(self.__conn_graph)
+        #print(self.__rev_conn_graph)
+
+    def growConnectedGraph(self, fromV):
+        if fromV not in self.__dic_graph:
+            return
+        for to in self.__dic_graph[fromV]:
+            toV = to[0]
+            if fromV in self.__conn_graph:
+                if toV not in self.__conn_graph[fromV]:
+                    self.__conn_graph[fromV].append(toV)
+            else:
+                self.__conn_graph[fromV] = []
+                self.__conn_graph[fromV].append(toV)
+            if toV in self.__rev_conn_graph:
+                if fromV not in self.__rev_conn_graph[toV]:
+                    self.__rev_conn_graph[toV].append(fromV)
+            else:
+                self.__rev_conn_graph[toV] = []
+                self.__rev_conn_graph[toV].append(fromV)
+            self.growConnectedGraph(toV)
+
+    def pageRankCallGraph(self):
+        self.constructGraph()
+        self.constructConnectedGraph()
+        rows, cols, vals = [], [], []
+        keys = self.__conn_graph.keys()
         map_dict = dict(zip(list(keys), range(len(keys))))
-        for key, values in self.__dic_graph.items():
+        for key, values in self.__conn_graph.items():
             for value in values:
                 rows.append(map_dict[key])
-                if value[0] in map_dict:
-                    cols.append(map_dict[value[0]])
+                if value in map_dict:
+                    cols.append(map_dict[value])
                 else:
-                    map_dict[value[0]] = len(map_dict)
-                    cols.append(map_dict[value[0]])
-                vals.append(value[1])
+                    map_dict[value] = len(map_dict)
+                    cols.append(map_dict[value])
+                vals.append(1)
         G = sparse.csr_matrix((vals, (rows, cols)), shape=(len(map_dict), len(map_dict)))
         per = np.random.randint(100, size=len(map_dict))
-        self.build_rev_dict_graph()
         for key in map_dict:
             if self.check_if_in_priv_dic(key) and key in self.__cc_bin:
                 per[map_dict[key]] = self.get_priv_score(key)
@@ -377,7 +403,7 @@ class Soong:
             for val in vals:
                 if val in self.__cc_bin:
                     return True
-                elif check_if_connect(val):
+                elif self.check_if_connect(val):
                     return True
         return False
 
